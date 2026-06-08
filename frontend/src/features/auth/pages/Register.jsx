@@ -8,7 +8,23 @@ import { Label } from '../../../components/ui/label';
 import { Checkbox } from '../../../components/ui/checkbox';
 import { Eye, EyeOff } from 'lucide-react';
 
+const formatPhoneNumber = (value) => {
+  if (!value) return value;
+  let cleanValue = value.replace(/[^\d]/g, '');
+  if (cleanValue.startsWith('91') && cleanValue.length > 10) {
+    cleanValue = cleanValue.slice(2);
+  }
+  const phoneNumber = cleanValue.slice(0, 10);
+  const len = phoneNumber.length;
+  if (len === 0) return '';
+  if (len <= 5) {
+    return `+91 ${phoneNumber}`;
+  }
+  return `+91 ${phoneNumber.slice(0, 5)} ${phoneNumber.slice(5)}`;
+};
+
 export default function Register() {
+
   const [formData, setFormData] = useState({
     fullname: '',
     contact: '',
@@ -19,14 +35,18 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   
-  const { register, loading, error } = useAuth();
+  const { handleRegister, loading, error } = useAuth();
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
+    let finalValue = type === 'checkbox' ? checked : value;
+    if (name === 'contact') {
+      finalValue = formatPhoneNumber(value);
+    }
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: finalValue
     }));
     if (errorMsg) setErrorMsg('');
   };
@@ -47,9 +67,26 @@ export default function Register() {
       return;
     }
 
+    let cleanedContact = formData.contact.replace(/[^\d]/g, '');
+    if (cleanedContact.startsWith('91') && cleanedContact.length > 10) {
+      cleanedContact = cleanedContact.slice(2);
+    }
+
+    if (cleanedContact.length !== 10) {
+      setErrorMsg('Contact number must be exactly 10 digits');
+      return;
+    }
+
     try {
-      await register(formData).unwrap();
-      navigate('/login', { replace: true });
+      const result = await handleRegister({
+        ...formData,
+        contact: cleanedContact
+      });
+      if (result.success) {
+        navigate('/login', { replace: true });
+      } else {
+        setErrorMsg(result.error || 'Registration failed. Please try again.');
+      }
     } catch (err) {
       setErrorMsg(err?.message || 'Registration failed. Please try again.');
     }
@@ -78,6 +115,7 @@ export default function Register() {
                   value={formData.fullname}
                   onChange={handleInputChange}
                   disabled={loading}
+                  autoFocus
                 />
               </div>
 
@@ -146,16 +184,16 @@ export default function Register() {
                 />
                 <Label
                   htmlFor="isSeller"
-                  className="text-[14px] text-[#666666] cursor-pointer select-none font-normal"
+                  className="text-[14px] text-[#666666] cursor-pointer select-none font-normal normal-case tracking-normal"
                 >
-                  Register as a Seller
+                  Register as Seller
                 </Label>
               </div>
 
               {/* Error Message */}
               {(errorMsg || error) && (
                 <div className="text-[13px] text-[#ffb4ab] bg-[#93000a]/20 border border-[#93000a]/50 p-3 rounded-[6px]">
-                  {errorMsg || error?.message || 'Something went wrong'}
+                  {errorMsg || (typeof error === 'string' ? error : error?.message) || 'Something went wrong'}
                 </div>
               )}
 

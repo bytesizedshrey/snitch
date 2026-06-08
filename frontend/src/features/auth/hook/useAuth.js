@@ -15,10 +15,17 @@ export const useAuth = () => {
             dispatch(setLoading(false))
             return { success: true, data }
         } catch (err) {
-            const message = err.response?.data?.message || err.message || "Failed to register"
-            dispatch(setError(message))
-            dispatch(setLoading(false))
-            return { success: false, error: message }
+            const data = err.response?.data;
+            let message = data?.message;
+            if (!message && data?.errors && Array.isArray(data.errors)) {
+                message = data.errors.map(e => e.msg).join(', ');
+            }
+            if (!message) {
+                message = err.message || "Failed to register";
+            }
+            dispatch(setError(message));
+            dispatch(setLoading(false));
+            return { success: false, error: message };
         }
     }
 
