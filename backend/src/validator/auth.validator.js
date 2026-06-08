@@ -25,5 +25,8 @@ export const validateRegisterUser = [
     .notEmpty().withMessage('full name is erquired')
     .isLength({min : 3}).withMessage('full name must be of atleast 3 character.'),
 
+    body('isSeller')
+    .isBoolean().withMessage('isSeller must be a boolean value.'),
+
     validateRequest
 ]
