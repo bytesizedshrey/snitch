@@ -3,6 +3,9 @@ import cookieParser from 'cookie-parser'
 import morgan from 'morgan'
 import authRouter from './routes/auth.routes.js'
 import cors from 'cors'
+import passport from'passport'
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20'
+
 
 const app = express()
 
@@ -14,6 +17,16 @@ app.use(cors({
     origin : ['http://localhost:5173', 'http://localhost:5174'],
     methods : ['GET','POST','PUT','DELETE'],
     credentials : true
+}))
+
+app.use(passport.initialize())
+
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: '/auth/google/callback',
+},(accessToken,refreshToken,profile,done)=>{
+    return done(null,profile)
 }))
 
 app.get('/',(req,res)=>{

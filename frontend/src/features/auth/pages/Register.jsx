@@ -188,6 +188,8 @@ export default function Register() {
                 >
                   Register as Seller
                 </Label>
+
+                <a href="/api/auth/google" className="text-primary hover:underline underline-offset-4 decoration-[#333333] transition-colors">Continue With Google</a>
               </div>
 
               {/* Error Message */}

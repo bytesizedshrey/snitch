@@ -77,3 +77,9 @@ export const login = async (req,res) => {
 
     await sendTokenResponse(user,res,"user logged in sucessfully")
 }
+
+export const googleCallback = async (req,res) => {
+    console.log(req.user)
+
+    res.redirect('http://localhost:5173/dashboard')
+}
