@@ -83,7 +83,7 @@ export default function Register() {
         contact: cleanedContact
       });
       if (result.success) {
-        navigate('/login', { replace: true });
+        navigate('/', { replace: true });
       } else {
         setErrorMsg(result.error || 'Registration failed. Please try again.');
       }
