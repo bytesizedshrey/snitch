@@ -20,10 +20,11 @@ router.get(
 router.get(
     '/google/callback',
     passport.authenticate('google', {
-        session: false
+      session: false,
+      failureRedirect: '/login'
     }),
     googleCallback
-)
+  );
 
 
 export default router

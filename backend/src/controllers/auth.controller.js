@@ -82,9 +82,9 @@ export const login = async (req,res) => {
 export const googleCallback = async (req,res) => {
     const {id,displayName,emails,photos} = req.user
     const email = emails[0].value;
-    const profilePici = photos[0].value;
+    const profilePic = photos[0].value;
 
-    const user = await userModel.findOne({
+    let user = await userModel.findOne({
         email
     })
 
@@ -102,7 +102,7 @@ export const googleCallback = async (req,res) => {
         id : user._id,
     },
     config.JWT_SECRET,{
-        expires : '7d'
+        expiresIn : '7d'
     }
 )
 
