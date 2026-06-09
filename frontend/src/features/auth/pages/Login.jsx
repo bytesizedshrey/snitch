@@ -52,8 +52,8 @@ export default function Login() {
       <div className="sm:mx-auto sm:w-full sm:max-w-[400px]">
         <Card className="p-6">
           <div className="mb-8 text-center">
-            <h2 className="text-[24px] font-light text-primary mb-1 tracking-tight">Welcome Back</h2>
-            <p className="text-[13px] text-[#666666]">Access your console.</p>
+            <h2 className="text-[24px] font-light text-primary mb-1 tracking-tight selection:bg-neutral-400">Welcome Back</h2>
+            <p className="text-[13px] text-[#666666] selection:bg-neutral-400">Access your console.</p>
           </div>
 
           <CardContent className="p-0">
@@ -119,9 +119,9 @@ export default function Login() {
             </form>
 
             <div className="mt-6 text-center pt-6 border-t border-[#1e1e1e]">
-              <p className="text-[13px] text-[#555555]">
+              <p className="text-[13px] text-[#555555] selection:bg-neutral-400">
                 Don't have an account?{' '}
-                <Link to="/register" className="text-primary hover:underline underline-offset-4 decoration-[#333333] transition-colors">
+                <Link to="/register" className="text-primary hover:underline underline-offset-4 decoration-[#333333] transition-colors ">
                   Register
                 </Link>
               </p>

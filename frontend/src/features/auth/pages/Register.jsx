@@ -97,8 +97,8 @@ export default function Register() {
       <div className="sm:mx-auto sm:w-full sm:max-w-[400px]">
         <Card className="p-6">
           <div className="mb-8 text-center">
-            <h2 className="text-[24px] font-light text-primary mb-1 tracking-tight">Create Account</h2>
-            <p className="text-[13px] text-[#666666]">Join the ecosystem.</p>
+            <h2 className="text-[24px] font-light text-primary mb-1 tracking-tight selection:bg-neutral-400">Create Account</h2>
+            <p className="text-[13px] text-[#666666] selection:bg-neutral-400">Join the ecosystem.</p>
           </div>
 
           <CardContent className="p-0">
