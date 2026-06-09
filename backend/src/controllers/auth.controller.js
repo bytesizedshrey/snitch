@@ -81,33 +81,61 @@ export const login = async (req,res) => {
 
 //googleCallback handles the user after successful Google login, finds/creates them in DB, generates a login token, and redirects them to the frontend.
 export const googleCallback = async (req,res) => {
-    const {id,displayName,emails,photos} = req.user //req.user comes from Passport.js after successful Google login.
-    //It extracts email + profile picture.
-    const email = emails[0].value;
-    const profilePic = photos[0].value;
+    try {
+        const {id,displayName,emails,photos} = req.user //req.user comes from Passport.js after successful Google login.
+        const email = emails[0].value;
+        const profilePic = photos[0].value;
 
-    //Check if user already exists
-    let user = await userModel.findOne({
-        email
-    })
-
-    //if user dosnt exist then create the user
-    if(!user){
-        user = await userModel.create({
-            email,
-            googleId : id,
-            fullname : displayName
+        //Check if user already exists
+        let user = await userModel.findOne({
+            email
         })
-    }
 
-    //create token
-    const token = jwt.sign({
-        id : user._id,
-    },
-    config.JWT_SECRET,{
-        expiresIn : '7d'
+        //if user dosnt exist then create the user
+        if(!user){
+            user = await userModel.create({
+                email,
+                googleId : id,
+                fullname : displayName
+            })
+        }
+
+        //create token
+        const token = jwt.sign({
+            id : user._id,
+        },
+        config.JWT_SECRET,{
+            expiresIn : '7d'
+        })
+
+        //store token in cookie so the user remains authenticated on the frontend
+        res.cookie("token", token)
+
+        //This just redirects user to frontend.
+        res.redirect('http://localhost:5173/')
+    } catch (error) {
+        console.error("Google Auth Callback Error:", error)
+        res.redirect('http://localhost:5173/login?error=google_auth_failed')
     }
-)
-    //This just redirects user to frontend.
-    res.redirect('http://localhost:5173/')
+}
+
+export const getMe = async (req, res) => {
+    try {
+        if (!req.user) {
+            return res.status(401).json({ message: 'Unauthorized' })
+        }
+        return res.status(200).json({
+            success: true,
+            user: {
+                id: req.user._id,
+                email: req.user.email,
+                contact: req.user.contact,
+                fullname: req.user.fullname,
+                role: req.user.role
+            }
+        })
+    } catch (error) {
+        console.error('Get Me Error:', error)
+        return res.status(500).json({ message: 'Server error' })
+    }
 } 

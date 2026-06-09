@@ -23,3 +23,13 @@ export async function login({email,password}) {
 
     return response.data
 }
+
+export async function fetchMe() {
+    const response = await authApiInstance.get('/me')
+    return response.data
+}
+
+export async function logoutUser() {
+    const response = await authApiInstance.post('/logout')
+    return response.data
+}

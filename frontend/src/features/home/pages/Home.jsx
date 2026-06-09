@@ -2,8 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../../../components/ui/button';
 import { Card, CardContent } from '../../../components/ui/card';
+import { useAuth } from '../../auth/hook/useAuth';
 
 export default function Home() {
+  const { user } = useAuth();
+
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-primary flex flex-col font-['DM_Sans']">
       {/* Header */}
@@ -22,9 +25,21 @@ export default function Home() {
             <Link to="/lookbook" className="text-[12px] text-[#555555] hover:text-white transition-colors tracking-wide">
               Lookbook
             </Link>
-            <Link to="/login" className="text-[12px] text-[#555555] hover:text-white transition-colors tracking-wide">
-              Sign In
-            </Link>
+            {user ? (
+              user.role === 'seller' ? (
+                <Link to="/dashboard" className="text-[12px] text-emerald-500 hover:text-emerald-400 transition-colors tracking-wide font-medium">
+                  Console
+                </Link>
+              ) : (
+                <span className="text-[12px] text-[#888888] tracking-wide font-light">
+                  Hello, {user.fullname?.split(' ')[0]}
+                </span>
+              )
+            ) : (
+              <Link to="/login" className="text-[12px] text-[#555555] hover:text-white transition-colors tracking-wide">
+                Sign In
+              </Link>
+            )}
             <Link to="/shop">
               <Button className="h-[30px] px-3 text-[11px] bg-primary text-[#111111] hover:bg-[#e0e0e0]">
                 Shop Now

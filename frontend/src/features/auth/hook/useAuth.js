@@ -1,5 +1,5 @@
 import {setError,setLoading,setUser} from '../state/auth.slice.js'
-import {register,login} from '../service/auth.api.js'
+import {register,login,fetchMe,logoutUser} from '../service/auth.api.js'
 import  {useDispatch, useSelector} from 'react-redux'
 
 export const useAuth = () => {
@@ -51,5 +51,32 @@ export const useAuth = () => {
         }
     }
 
-    return { handleRegister, handleLogin, user, loading, error }
+    async function handleFetchMe() {
+        dispatch(setLoading(true))
+        try {
+            const data = await fetchMe()
+            dispatch(setUser(data.user || data))
+            dispatch(setLoading(false))
+            return { success: true, data }
+        } catch (err) {
+            dispatch(setUser(null))
+            dispatch(setLoading(false))
+            return { success: false, error: err.message }
+        }
+    }
+
+    async function handleLogout() {
+        dispatch(setLoading(true))
+        try {
+            await logoutUser()
+            dispatch(setUser(null))
+            dispatch(setLoading(false))
+            return { success: true }
+        } catch (err) {
+            dispatch(setLoading(false))
+            return { success: false, error: err.message }
+        }
+    }
+
+    return { handleRegister, handleLogin, handleFetchMe, handleLogout, user, loading, error }
 }

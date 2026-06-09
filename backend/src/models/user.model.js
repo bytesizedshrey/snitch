@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema({
 //"Wait! Before entering the database, security check!"
 userSchema.pre("save",async function () {
     //Did the password even change?
-    if(!this.isModified('password')) return
+    if(!this.password || !this.isModified('password')) return
 
     //Secret password blender
     const hash = await bcrypt.hash(this.password,10)

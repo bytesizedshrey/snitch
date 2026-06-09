@@ -84,7 +84,12 @@ export default function Register() {
         contact: cleanedContact
       });
       if (result.success) {
-        navigate('/', { replace: true });
+        const regUser = result.data?.user || result.data;
+        if (regUser?.role === 'seller') {
+          navigate('/dashboard', { replace: true });
+        } else {
+          navigate('/', { replace: true });
+        }
       } else {
         setErrorMsg(result.error || 'Registration failed. Please try again.');
       }
