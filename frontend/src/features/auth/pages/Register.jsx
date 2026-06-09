@@ -6,6 +6,7 @@ import { Input } from '../../../components/ui/input';
 import { Card, CardContent } from '../../../components/ui/card';
 import { Label } from '../../../components/ui/label';
 import { Checkbox } from '../../../components/ui/checkbox';
+import { GoogleButton } from '../../../components/ui/google-button';
 import { Eye, EyeOff } from 'lucide-react';
 
 const formatPhoneNumber = (value) => {
@@ -104,6 +105,17 @@ export default function Register() {
           <CardContent className="p-0">
             <form onSubmit={handleSubmit} className="space-y-5">
               
+              {/* Google OAuth Button */}
+              <GoogleButton href="/api/auth/google" />
+
+              {/* Visual Divider */}
+              <div className="relative flex items-center justify-center py-2">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-[#1e1e1e]"></div>
+                </div>
+                <span className="relative px-3 text-[11px] text-[#444444] bg-[#111111] uppercase tracking-wider">or</span>
+              </div>
+
               {/* Full Name */}
               <div>
                 <Input
@@ -190,8 +202,6 @@ export default function Register() {
                 </Label>
 
               </div>
-
-              <a href="/api/auth/google" className="text-primary hover:underline underline-offset-4 decoration-[#333333] transition-colors">Continue With Google</a>
 
               {/* Error Message */}
               {(errorMsg || error) && (

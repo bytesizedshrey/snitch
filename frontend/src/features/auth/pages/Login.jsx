@@ -4,6 +4,7 @@ import { useAuth } from '../hook/useAuth';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { Card, CardContent } from '../../../components/ui/card';
+import { GoogleButton } from '../../../components/ui/google-button';
 import { Eye, EyeOff } from 'lucide-react';
 
 export default function Login() {
@@ -59,6 +60,17 @@ export default function Login() {
           <CardContent className="p-0">
             <form onSubmit={handleSubmit} className="space-y-5">
               
+              {/* Google OAuth Button */}
+              <GoogleButton href="/api/auth/google" />
+
+              {/* Visual Divider */}
+              <div className="relative flex items-center justify-center py-2">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-[#1e1e1e]"></div>
+                </div>
+                <span className="relative px-3 text-[11px] text-[#444444] bg-[#111111] uppercase tracking-wider">or</span>
+              </div>
+
               {/* Email */}
               <div>
                 <Input
