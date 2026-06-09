@@ -2,7 +2,7 @@ import productModel from '../models/product.model.js'
 import { uploadFile } from '../service/storage.service.js'
 
 // Create a new product
-export async function createProducts(req, res) {
+export async function createProduct(req, res) {
     try {
         const body = req.body || {}
         const { title, description, descriptionAmount, price, priceAmount, priceCurrency, images } = body
@@ -85,7 +85,7 @@ export async function createProducts(req, res) {
 }
 
 // Get all products
-export async function getProducts(req, res) {
+export async function getAllProducts(req, res) {
     try {
         const products = await productModel.find().populate('seller', 'fullname email')
         return res.status(200).json(products)
@@ -95,8 +95,19 @@ export async function getProducts(req, res) {
     }
 }
 
-// Get product by ID
-export async function getProductById(req, res) {
+// Get all products of the authenticated seller
+export async function getSellerProducts(req, res) {
+    try {
+        const products = await productModel.find({ seller: req.user._id }).populate('seller', 'fullname email')
+        return res.status(200).json(products)
+    } catch (error) {
+        console.error('Get Seller Products Error:', error)
+        return res.status(500).json({ message: 'Server error' })
+    }
+}
+
+// Get product details by ID
+export async function getProductDetails(req, res) {
     try {
         const product = await productModel.findById(req.params.id).populate('seller', 'fullname email')
 
@@ -106,7 +117,7 @@ export async function getProductById(req, res) {
 
         return res.status(200).json(product)
     } catch (error) {
-        console.error('Get Product By ID Error:', error)
+        console.error('Get Product Details Error:', error)
         return res.status(500).json({ message: 'Server error' })
     }
 }
@@ -210,6 +221,63 @@ export async function deleteProduct(req, res) {
         return res.status(200).json({ message: 'Product deleted successfully' })
     } catch (error) {
         console.error('Delete Product Error:', error)
+        return res.status(500).json({ message: 'Server error' })
+    }
+}
+
+// Add product variant
+export async function addProductVariant(req, res) {
+    try {
+        const { productId } = req.params
+        const body = req.body || {}
+        const { size, color, priceAmount, priceCurrency, stock } = body
+
+        const product = await productModel.findById(productId)
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' })
+        }
+
+        // Verify that the logged-in seller is the owner of the product
+        if (product.seller.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ message: 'Forbidden: You do not own this product.' })
+        }
+
+        let parsedImages = []
+
+        // Handle file uploads from multer if any
+        if (req.files && req.files.length > 0) {
+            for (const file of req.files) {
+                const uploadResult = await uploadFile({
+                    buffer: file.buffer,
+                    fileName: `${Date.now()}-${file.originalname}`
+                })
+                parsedImages.push({ url: uploadResult.url })
+            }
+        }
+
+        const variant = {
+            size,
+            color,
+            price: {
+                amount: priceAmount ? Number(priceAmount) : undefined,
+                currency: priceCurrency || 'INR'
+            },
+            stock: stock ? Number(stock) : 0,
+            images: parsedImages
+        }
+
+        if (!product.variants) {
+            product.variants = []
+        }
+        product.variants.push(variant)
+        await product.save()
+
+        return res.status(201).json({
+            message: 'Variant added successfully',
+            product
+        })
+    } catch (error) {
+        console.error('Add Product Variant Error:', error)
         return res.status(500).json({ message: 'Server error' })
     }
 }
