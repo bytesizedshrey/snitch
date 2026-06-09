@@ -79,11 +79,14 @@ export const login = async (req,res) => {
 
 }
 
+//googleCallback handles the user after successful Google login, finds/creates them in DB, generates a login token, and redirects them to the frontend.
 export const googleCallback = async (req,res) => {
-    const {id,displayName,emails,photos} = req.user
+    const {id,displayName,emails,photos} = req.user //req.user comes from Passport.js after successful Google login.
+    //It extracts email + profile picture.
     const email = emails[0].value;
     const profilePic = photos[0].value;
 
+    //Check if user already exists
     let user = await userModel.findOne({
         email
     })
@@ -105,6 +108,6 @@ export const googleCallback = async (req,res) => {
         expiresIn : '7d'
     }
 )
-
+    //This just redirects user to frontend.
     res.redirect('http://localhost:5173/')
 } 
