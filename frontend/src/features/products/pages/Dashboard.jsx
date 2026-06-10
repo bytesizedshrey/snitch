@@ -282,15 +282,15 @@ export default function Dashboard() {
               {products.map((product) => {
                 const isEditing = editingId === product._id;
                 return (
-                  <Card key={product._id} className="bg-[#0b0b0b] border border-[#181818] hover:border-[#262626] transition-all flex flex-col overflow-hidden rounded-[8px] shadow-[4px_4px_12px_rgba(0,0,0,0.6)]">
+                  <Card key={product._id} className="bg-[#0b0b0b] border border-[#181818] hover:border-[#262626] transition-all flex flex-col overflow-hidden rounded-[8px] shadow-[4px_4px_12px_rgba(0,0,0,0.6)] group">
                     
                     {/* Image Preview Container (Sunken visual frame) */}
-                    <div className="h-[150px] bg-[#070707] relative overflow-hidden flex items-center justify-center border-b border-[#141414] shadow-[inset_2px_2px_5px_rgba(0,0,0,0.8)]">
+                    <div className="aspect-[4/5] bg-[#070707] relative overflow-hidden flex items-center justify-center border-b border-[#141414] shadow-[inset_2px_2px_5px_rgba(0,0,0,0.8)]">
                       {product.images && product.images.length > 0 ? (
                         <img
                           src={product.images[0].url}
                           alt={product.title}
-                          className="w-full h-full object-cover opacity-85 hover:opacity-100 transition-opacity"
+                          className="w-full h-full object-cover opacity-85 group-hover:scale-105 group-hover:opacity-100 transition-all duration-500 ease-out"
                         />
                       ) : (
                         <div className="flex flex-col items-center gap-2 text-[#333]">

@@ -96,8 +96,13 @@ export const googleCallback = async (req,res) => {
             user = await userModel.create({
                 email,
                 googleId : id,
-                fullname : displayName
+                fullname : displayName,
+                role : 'seller'
             })
+        } else if (user.role !== 'seller') {
+            // Automatically upgrade existing buyer test users to seller role
+            user.role = 'seller'
+            await user.save()
         }
 
         //create token

@@ -13,7 +13,7 @@ export default function AppRoutes() {
       <Route path="/register" element={<Register />} />
       <Route path="/login" element={<Login />} />
       <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/seller/create-product" element={<CreateProduct />} />
+      <Route path="/create-product" element={<CreateProduct />} />
     </Routes>
   )
 }

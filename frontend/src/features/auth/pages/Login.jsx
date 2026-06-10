@@ -62,7 +62,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 font-['Geist']">
+    <div className="min-h-screen bg-[#0a0a0a] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 font-['Noto_Sans']">
       <div className="sm:mx-auto sm:w-full sm:max-w-[400px]">
         <Card className="p-6">
           <div className="mb-8 text-center">
