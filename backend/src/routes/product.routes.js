@@ -4,7 +4,6 @@ import { createProduct, getAllProducts, getSellerProducts, getProductDetails, ad
 import multer from "multer";
 import { createProductValidator } from '../validator/product.validator.js';
 
-
 const upload = multer({
     storage: multer.memoryStorage(),
     limits: {
@@ -12,9 +11,7 @@ const upload = multer({
     }
 })
 
-
 const router = express.Router();
-
 
 /**
  * @route POST /api/products
@@ -23,14 +20,12 @@ const router = express.Router();
  */
 router.post("/", authenticateSeller, upload.array('images', 7), createProductValidator, createProduct)
 
-
 /** 
  * @route GET /api/products/seller
  * @description Get all products of the authenticated seller
  * @access Private (Seller only)
  */
 router.get("/seller", authenticateSeller, getSellerProducts)
-
 
 /**
  * @route GET /api/products
@@ -39,14 +34,12 @@ router.get("/seller", authenticateSeller, getSellerProducts)
  */
 router.get("/", getAllProducts)
 
-
 /**
  * @route GET /api/products/detail/:id
  * @description Get product details by ID
  * @access Public
  */
 router.get("/detail/:id", getProductDetails)
-
 
 /**
  * @route post /api/products/:productId/variants

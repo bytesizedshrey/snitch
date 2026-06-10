@@ -8,7 +8,10 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20'
 import productRouter from './routes/product.routes.js'
 
 
+import { config } from './config/config.js'
+
 const app = express()
+app.set('trust proxy', true)
 
 app.use(morgan("dev"))
 app.use(express.json())
@@ -23,9 +26,10 @@ app.use(cors({
 app.use(passport.initialize())
 
 passport.use(new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    clientID: config.GOOGLE_CLIENT_ID,
+    clientSecret: config.GOOGLE_CLIENT_SECRET,
     callbackURL: '/api/auth/google/callback',
+    proxy: true
 },(accessToken,refreshToken,profile,done)=>{
     return done(null,profile)
 }))

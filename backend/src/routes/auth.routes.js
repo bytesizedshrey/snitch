@@ -19,7 +19,8 @@ router.post('/logout', (req, res) => {
 router.get(
     '/google',
     passport.authenticate('google', {
-        scope: ['profile', 'email']
+        scope: ['profile', 'email'],
+        session: false
     })
 )
 
