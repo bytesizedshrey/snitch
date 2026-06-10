@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Provider } from 'react-redux'
+import { Provider, useSelector } from 'react-redux'
 import { store } from './app.store'
 import AppRoutes from './app.routes'
 import { useAuth } from '../features/auth/hook/useAuth'
@@ -32,6 +32,8 @@ const AppContent = () => {
 }
 
 const App = () => {
+  const user = useSelector(state => state.auth.user)
+  console.log(user)
   return (
     <Provider store={store}>
       <AppContent />

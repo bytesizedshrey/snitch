@@ -280,7 +280,7 @@ export default function Dashboard() {
                 pricing.
               </p>
 
-              <Link to="/seller" className="w-full mt-3 block">
+              <Link to="/seller/create-product" className="w-full mt-3 block">
                 <Button className="w-full h-10 gap-1.5 text-[12px]">
                   <Plus className="h-4 w-4" /> Add New Product
                 </Button>

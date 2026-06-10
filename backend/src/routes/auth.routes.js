@@ -34,5 +34,4 @@ router.get(
     googleCallback
   );
 
-
 export default router
