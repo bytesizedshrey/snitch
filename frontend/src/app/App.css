@@ -110,3 +110,9 @@ button:focus-visible {
   outline: 1px solid #333333 !important;
   outline-offset: 2px;
 }
+
+/* Global Text Selection Highlight */
+::selection {
+  background-color: #333333 !important;
+  color: #ffffff !important;
+}
