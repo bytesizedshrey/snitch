@@ -3,20 +3,18 @@ import { createProduct, getAllProducts, getSellerProducts } from "../service/pro
 import { setSellerProducts } from "../state/product.slice";
 
 export const useProduct = () => {
+    const dispatch = useDispatch()
 
     async function handleCreateProduct(formData){
-        const dispatch = useDispatch()
         const data = await createProduct(formData)
         return data.product
     }
 
     async function handleGetSellerProduct() {
         const data = await getSellerProducts()
-        dispatch(setSellerProducts(data.products))
-        return data.products
-         
+        dispatch(setSellerProducts(data.products || data))
+        return data.products || data
     }
 
     return {handleCreateProduct,handleGetSellerProduct}
-
 }

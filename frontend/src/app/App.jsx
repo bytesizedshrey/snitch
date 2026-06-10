@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Provider } from 'react-redux'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter } from 'react-router-dom'
 import { store } from './app.store'
-import Register from '../features/auth/pages/Register'
-import Login from '../features/auth/pages/Login'
-import Home from '../features/home/pages/Home'
-import Dashboard from '../features/products/pages/Dashboard'
+import AppRoutes from './app.routes'
 import { useAuth } from '../features/auth/hook/useAuth'
 import './App.css'
 
@@ -32,12 +29,7 @@ const AppContent = () => {
 
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-      </Routes>
+      <AppRoutes />
     </BrowserRouter>
   )
 }
