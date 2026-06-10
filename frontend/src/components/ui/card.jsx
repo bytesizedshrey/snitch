@@ -5,10 +5,9 @@ const Card = React.forwardRef(({ className, ...props }, ref) => (
   <div
     ref={ref}
     className={cn(
-      "bg-[#111111] border border-[#222222] rounded-xl text-on-surface",
+      "bg-bento-card border border-bento-border rounded-[12px] text-bento-text shadow-bento",
       className
     )}
-    style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.6)", ...props.style }}
     {...props}
   />
 ))

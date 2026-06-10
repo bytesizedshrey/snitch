@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { Provider } from 'react-redux'
-import { BrowserRouter } from 'react-router-dom'
 import { store } from './app.store'
 import AppRoutes from './app.routes'
 import { useAuth } from '../features/auth/hook/useAuth'
@@ -28,9 +27,7 @@ const AppContent = () => {
   }
 
   return (
-    <BrowserRouter>
-      <AppRoutes />
-    </BrowserRouter>
+    <AppRoutes />
   )
 }
 

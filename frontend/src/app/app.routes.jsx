@@ -1,19 +1,43 @@
 import React from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Home from '../features/home/pages/Home'
 import Register from '../features/auth/pages/Register'
 import Login from '../features/auth/pages/Login'
 import Dashboard from '../features/products/pages/Dashboard'
 import CreateProduct from '../features/products/pages/CreateProduct'
 
+export const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Home />
+  },
+  {
+    path: "/register",
+    element: <Register />
+  },
+  {
+    path: "/login",
+    element: <Login />
+  },
+  {
+    path: "/dashboard",
+    element: <Dashboard />
+  },
+  {
+    path: "/seller",
+    children: [
+      {
+        path : '/seller/create-product',
+        element : <CreateProduct/>
+      },
+      {
+        path : '/seller/dashboard',
+        element : <Dashboard/>
+      }
+    ]
+  }
+])
+
 export default function AppRoutes() {
-  return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/create-product" element={<CreateProduct />} />
-    </Routes>
-  )
+  return <RouterProvider router={router} />
 }

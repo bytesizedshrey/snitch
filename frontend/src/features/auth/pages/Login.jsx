@@ -49,7 +49,7 @@ export default function Login() {
       if (result.success) {
         const loggedInUser = result.data?.user || result.data;
         if (loggedInUser?.role === 'seller') {
-          navigate('/dashboard', { replace: true });
+          navigate('/seller/dashboard', { replace: true });
         } else {
           navigate('/', { replace: true });
         }
@@ -62,7 +62,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 font-['Noto_Sans']">
+    <div className="min-h-screen bg-bento-bg flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 font-['Noto_Sans']">
       <div className="sm:mx-auto sm:w-full sm:max-w-[400px]">
         <Card className="p-6">
           <div className="mb-8 text-center">
@@ -81,7 +81,7 @@ export default function Login() {
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-[#1e1e1e]"></div>
                 </div>
-                <span className="relative px-3 text-[11px] text-[#444444] bg-[#111111] uppercase tracking-wider">or</span>
+                <span className="relative px-3 text-[11px] text-[#444444] bg-bento-card uppercase tracking-wider">or</span>
               </div>
 
               {/* Email */}
