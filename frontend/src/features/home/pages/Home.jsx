@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../../../components/ui/button';
 import { useAuth } from '../../auth/hook/useAuth';
+import { useSelector, useDispatch } from 'react-redux';
+import { addToCart as addToCartAction, removeFromCart as removeFromCartAction, updateCartQuantity, clearCart, syncCart } from '../../products/state/product.slice';
 import { getAllProducts } from '../../products/service/product.api';
 import { ThemeToggle } from '../../../components/ThemeToggle';
 import { BiomorphicBackground } from '../../../components/BiomorphicBackground';
+import { BentoGrid, BentoCard } from '../../../components/magicui/bento-grid';
 import { 
   ArrowUpRight, 
   ShoppingBag, 
@@ -33,7 +36,8 @@ const defaultFeatured = {
 };
 
 export default function Home() {
-  const { user } = useAuth();
+  const { user, handleLogout } = useAuth();
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   
@@ -41,13 +45,12 @@ export default function Home() {
   const [zoomLevel, setZoomLevel] = useState(1);
   const [activeTab, setActiveTab] = useState('details');
 
-  // E-commerce States
-  const [cart, setCart] = useState([]);
+  const dispatch = useDispatch();
+  const cart = useSelector((state) => state.product.cart);
   const [cartOpen, setCartOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [selectedProduct, setSelectedProduct] = useState(null);
 
   useEffect(() => {
     let active = true;
@@ -56,6 +59,7 @@ export default function Home() {
         const data = await getAllProducts();
         if (active) {
           setProducts(data);
+          dispatch(syncCart(data));
           setLoading(false);
         }
       } catch (err) {
@@ -69,40 +73,20 @@ export default function Home() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [dispatch]);
 
   // Cart helper functions
   const addToCart = (product) => {
-    setCart((prevCart) => {
-      const existingItem = prevCart.find((item) => item.product._id === product._id);
-      if (existingItem) {
-        return prevCart.map((item) =>
-          item.product._id === product._id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        );
-      }
-      return [...prevCart, { product, quantity: 1 }];
-    });
+    dispatch(addToCartAction(product));
     setCartOpen(true);
   };
 
   const removeFromCart = (productId) => {
-    setCart((prevCart) => prevCart.filter((item) => item.product._id !== productId));
+    dispatch(removeFromCartAction(productId));
   };
 
   const updateQuantity = (productId, amount) => {
-    setCart((prevCart) =>
-      prevCart
-        .map((item) => {
-          if (item.product._id === productId) {
-            const nextQty = item.quantity + amount;
-            return { ...item, quantity: nextQty };
-          }
-          return item;
-        })
-        .filter((item) => item.quantity > 0)
-    );
+    dispatch(updateCartQuantity({ productId, amount }));
   };
 
   const totalCartItems = cart.reduce((total, item) => total + item.quantity, 0);
@@ -148,7 +132,7 @@ export default function Home() {
                     onClick={() => setSelectedCategory(isActive ? null : cat)}
                     className={`hover:text-bento-text cursor-pointer px-2 py-0.5 rounded-[4px] border transition-all ${
                       isActive
-                        ? 'bg-bento-card-sunken border-bento-border-light text-emerald-500 shadow-bento-sunken'
+                        ? 'bg-bento-card-sunken border-bento-border-light text-bento-text shadow-bento-sunken'
                         : 'border-transparent'
                     }`}
                   >
@@ -185,7 +169,7 @@ export default function Home() {
             >
               <ShoppingBag className="h-4 w-4" />
               {totalCartItems > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 h-4 w-4 rounded-full bg-emerald-500 border border-bento-border flex items-center justify-center text-[9px] font-bold text-white font-['DM_Mono'] shadow-bento">
+                <span className="absolute -top-1.5 -right-1.5 h-4 w-4 rounded-full bg-bento-text border border-bento-border flex items-center justify-center text-[9px] font-bold text-bento-bg font-['DM_Mono'] shadow-bento">
                   {totalCartItems}
                 </span>
               )}
@@ -193,13 +177,23 @@ export default function Home() {
 
             {user ? (
               user.role === 'seller' ? (
-                <Link to="/seller/dashboard" className="text-[12px] text-emerald-500 hover:text-emerald-400 transition-colors tracking-wide font-medium flex items-center gap-1 cursor-pointer bg-emerald-500/10 px-2 py-1 rounded-[4px] border border-emerald-500/20 ml-2">
+                <Link to="/seller/dashboard" className="text-[12px] text-bento-text hover:text-bento-text-muted transition-colors tracking-wide font-medium flex items-center gap-1.5 cursor-pointer bg-bento-card-sunken px-2.5 py-1 rounded-[4px] border border-bento-border-light ml-2">
                   Console <ArrowUpRight className="h-3 w-3" />
                 </Link>
               ) : (
-                <span className="text-[12px] text-bento-text-muted tracking-wide font-light ml-2">
-                  Hello, {user.fullname?.split(' ')[0]}
-                </span>
+                <div className="flex items-center gap-3 ml-2">
+                  <span className="text-[12px] text-bento-text-muted tracking-wide font-light">
+                    Hello, {user.fullname?.split(' ')[0]}
+                  </span>
+                  <button
+                    onClick={async () => {
+                      await handleLogout();
+                    }}
+                    className="text-[11px] text-red-500 hover:text-red-400 font-medium transition-colors cursor-pointer bg-red-500/10 px-2 py-1 rounded-[4px] border border-red-500/20"
+                  >
+                    Sign Out
+                  </button>
+                </div>
               )
             ) : (
               <div className="flex items-center gap-3 ml-2">
@@ -241,11 +235,11 @@ export default function Home() {
         {/* Promotional Hero Banner (Embossed) */}
         <div className="w-full bg-bento-card border border-bento-border rounded-[16px] p-8 md:p-12 shadow-bento relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="absolute top-0 left-0 right-0 h-[1px] bg-bento-border pointer-events-none" />
-          <div className="absolute -right-20 -top-20 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -right-20 -top-20 w-64 h-64 bg-zinc-500/5 rounded-full blur-3xl pointer-events-none" />
           
           <div className="space-y-4 max-w-lg relative z-10">
             <div className="inline-flex items-center gap-2 border border-bento-border-light px-3 py-1 rounded-full bg-bento-card-sunken shadow-bento-sunken">
-              <Sparkles className="h-3.5 w-3.5 text-emerald-500" />
+              <Sparkles className="h-3.5 w-3.5 text-zinc-400 dark:text-zinc-500" />
               <span className="text-[10px] text-bento-text-muted tracking-widest uppercase font-bold">
                 Summer Collection 2026
               </span>
@@ -277,8 +271,8 @@ export default function Home() {
                 <div className="flex items-center justify-between border-b border-bento-border-light pb-2 mb-2">
                   <div className="flex items-center gap-2">
                     <span className="relative flex h-2 w-2">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-zinc-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-zinc-500 shadow-[0_0_8px_rgba(113,113,122,0.8)]"></span>
                     </span>
                     <span className="text-[10px] font-semibold uppercase tracking-wider text-bento-text-muted font-['DM_Mono']">
                       Spotlight Interactive
@@ -295,7 +289,7 @@ export default function Home() {
                           onClick={() => setZoomLevel(z)}
                           className={`text-[9px] font-bold font-['DM_Mono'] px-1.5 py-0.5 rounded-[4px] border transition-all cursor-pointer ${
                             isActive
-                              ? 'bg-bento-card text-emerald-500 border-bento-border shadow-bento-btn'
+                              ? 'bg-bento-card text-bento-text border-bento-border shadow-bento-btn'
                               : 'bg-transparent text-bento-text-faint border-transparent hover:text-bento-text'
                           }`}
                         >
@@ -309,7 +303,7 @@ export default function Home() {
                 <div className="flex-1 flex gap-3 min-h-0">
                   {/* Image Bezel */}
                   <div 
-                    onClick={() => setSelectedProduct(featuredProduct)}
+                    onClick={() => navigate(`/product/${featuredProduct._id}`)}
                     className="w-1/3 aspect-[3/4] bg-bento-card-sunken border border-bento-border-light rounded-[8px] shadow-bento-sunken overflow-hidden relative group cursor-pointer"
                   >
                     <img
@@ -357,7 +351,7 @@ export default function Home() {
                             {featuredProduct.description}
                           </p>
                           <div className="flex items-center justify-between pt-1">
-                            <span className="text-[11px] font-bold text-emerald-500 font-['DM_Mono']">
+                            <span className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 font-['DM_Mono']">
                               {featuredProduct.price?.currency || 'INR'} {featuredProduct.price?.amount}
                             </span>
                             <button
@@ -414,7 +408,7 @@ export default function Home() {
             {(selectedCategory || searchQuery) && (
               <div
                 onClick={() => { setSelectedCategory(null); setSearchQuery(''); }}
-                className="text-[12px] font-medium text-emerald-500 hover:text-emerald-400 cursor-pointer transition-colors flex items-center gap-1 font-['DM_Mono']"
+                className="text-[12px] font-medium text-bento-text hover:text-bento-text-muted cursor-pointer transition-colors flex items-center gap-1 font-['DM_Mono']"
               >
                 Reset Filters <X className="h-3 w-3" />
               </div>
@@ -440,75 +434,64 @@ export default function Home() {
               </div>
               <button
                 onClick={() => { setSearchQuery(''); setSelectedCategory(null); }}
-                className="mt-2 text-[11px] text-emerald-500 font-bold font-['DM_Mono'] border border-emerald-500/20 px-3 py-1 rounded-[6px] bg-emerald-500/5 shadow-bento hover:bg-emerald-500/10 active:scale-95 transition-all cursor-pointer"
+                className="mt-2 text-[11px] text-bento-text font-bold font-['DM_Mono'] border border-bento-border-light px-3 py-1 rounded-[6px] bg-bento-card-sunken shadow-bento hover:bg-bento-card-hover active:scale-95 transition-all cursor-pointer"
               >
                 Clear Filters
               </button>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <BentoGrid>
               {filteredProducts.map((product, index) => {
                 // Make the first item take up 2 columns and 2 rows for a true bento feel
                 const isHero = index === 0 && !selectedCategory && !searchQuery;
                 
                 return (
-                  <div 
-                    key={product._id} 
-                    onClick={() => setSelectedProduct(product)}
-                    className={`bg-bento-card border border-bento-border rounded-[12px] overflow-hidden shadow-bento flex flex-col transition-all duration-300 group hover:-translate-y-1 hover:shadow-[12px_12px_30px_rgba(0,0,0,0.15)] dark:hover:shadow-[12px_12px_30px_rgba(0,0,0,0.9)] cursor-pointer ${
-                      isHero ? 'md:col-span-2 md:row-span-2' : 'col-span-1'
-                    }`}
+                  <BentoCard
+                    key={product._id}
+                    onClick={() => navigate(`/product/${product._id}`)}
+                    className={isHero ? 'md:col-span-2 md:row-span-2' : 'col-span-1'}
+                    name={product.title}
+                    description={product.description}
+                    background={
+                      <div className="relative w-full h-full bg-bento-card-sunken overflow-hidden shadow-bento-sunken">
+                        {product.images && product.images.length > 0 ? (
+                          <img 
+                            src={product.images[0].url} 
+                            alt={product.title} 
+                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 opacity-80 group-hover:opacity-100" 
+                          />
+                        ) : (
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <ImageIcon className="h-8 w-8 text-bento-text-faint" />
+                          </div>
+                        )}
+                        {/* Gradient overlay for better text readability on images */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-bento-card/90 via-bento-card/20 to-transparent pointer-events-none" />
+                      </div>
+                    }
                   >
-                    {/* Image container (Sunken) */}
-                    <div className={`relative bg-bento-card-sunken overflow-hidden border-b border-bento-border shadow-bento-sunken ${
-                      isHero ? 'aspect-[4/3] md:aspect-auto md:flex-1' : 'aspect-square'
-                    }`}>
-                      {product.images && product.images.length > 0 ? (
-                        <img 
-                          src={product.images[0].url} 
-                          alt={product.title} 
-                          className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" 
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <ImageIcon className="h-8 w-8 text-bento-text-faint" />
-                        </div>
-                      )}
-                      
-                      {/* Price Tag Overlay */}
-                      <div className="absolute top-4 right-4 bg-bento-card/90 backdrop-blur-md border border-bento-border px-3 py-1 rounded-[6px] shadow-bento">
-                        <span className="text-[12px] font-bold text-bento-text font-['DM_Mono']">
+                    {/* Add to Cart Actions & Price - Pass as children */}
+                    <div className="flex items-center justify-between w-full gap-4">
+                      <div className="bg-bento-card/90 backdrop-blur-md border border-bento-border px-3 py-1.5 rounded-[6px] shadow-bento">
+                        <span className="text-[14px] font-bold text-bento-text font-['DM_Mono']">
                           {product.price?.currency || 'INR'} {product.price?.amount}
                         </span>
                       </div>
-                    </div>
-                    
-                    {/* Details and Action */}
-                    <div className="p-5 flex flex-col justify-between gap-4 bg-bento-card">
-                      <div>
-                        <h3 className={`font-semibold text-bento-text tracking-tight ${isHero ? 'text-[20px] mb-2' : 'text-[14px] mb-1 truncate'}`}>
-                          {product.title}
-                        </h3>
-                        <p className={`text-bento-text-muted font-light leading-relaxed ${isHero ? 'text-[13px] line-clamp-3' : 'text-[11px] line-clamp-2'}`}>
-                          {product.description}
-                        </p>
-                      </div>
-                      
                       <Button
                         variant="secondary"
                         onClick={(e) => {
                           e.stopPropagation();
                           addToCart(product);
                         }}
-                        className="w-full h-[36px] text-[12px] shadow-bento-btn"
+                        className="flex-1 h-[36px] text-[12px] shadow-bento-btn pointer-events-auto"
                       >
                         Add to Cart
                       </Button>
                     </div>
-                  </div>
+                  </BentoCard>
                 );
               })}
-            </div>
+            </BentoGrid>
           )}
         </div>
       </main>
@@ -565,7 +548,7 @@ export default function Home() {
             
             <div className="flex items-center justify-between border-b border-bento-border-light pb-4 mb-4">
               <div className="flex items-center gap-2">
-                <ShoppingBag className="h-5 w-5 text-emerald-500" />
+                <ShoppingBag className="h-5 w-5 text-zinc-400 dark:text-zinc-500" />
                 <h2 className="text-[18px] font-semibold text-bento-text tracking-tight">Shopping Bag</h2>
                 <span className="text-[10px] font-['DM_Mono'] text-bento-text-faint bg-bento-card-sunken border border-bento-border-light px-2 py-0.5 rounded-[4px]">
                   {totalCartItems} Items
@@ -608,7 +591,7 @@ export default function Home() {
                         <h4 className="text-[12px] font-bold text-bento-text truncate leading-tight">
                           {item.product.title}
                         </h4>
-                        <p className="text-[10px] text-emerald-500 font-['DM_Mono'] font-bold">
+                        <p className="text-[10px] text-zinc-500 dark:text-zinc-400 font-['DM_Mono'] font-bold">
                           {item.product.price?.currency || 'INR'} {item.product.price?.amount}
                         </p>
                       </div>
@@ -653,7 +636,7 @@ export default function Home() {
                 </div>
                 <div className="flex justify-between text-[10px]">
                   <span>SHIPPING & PROCESSING</span>
-                  <span className="text-emerald-500 font-bold">COMPLIMENTARY</span>
+                  <span className="text-zinc-400 dark:text-zinc-500 font-bold">COMPLIMENTARY</span>
                 </div>
               </div>
               
@@ -661,7 +644,7 @@ export default function Home() {
                 disabled={cart.length === 0}
                 onClick={() => {
                   alert('Thank you for your order! Checkout simulated successfully.');
-                  setCart([]);
+                  dispatch(clearCart());
                   setCartOpen(false);
                 }}
                 className="w-full h-11 text-[12px] uppercase font-semibold tracking-wider gap-2 shadow-bento-btn active:translate-y-[1px] active:shadow-bento-btn-active mt-2"
@@ -673,82 +656,7 @@ export default function Home() {
         </>
       )}
 
-      {/* Product Quick View Modal */}
-      {selectedProduct && (
-        <>
-          <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 transition-opacity animate-fade-in"
-            onClick={() => setSelectedProduct(null)}
-          />
-          <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-2xl bg-bento-card border border-bento-border rounded-[16px] p-6 shadow-bento overflow-hidden flex flex-col md:flex-row gap-6 max-h-[90vh] overflow-y-auto animate-fade-in">
-            <div className="absolute top-0 left-0 right-0 h-[1px] bg-bento-border pointer-events-none" />
-            
-            <button
-              onClick={() => setSelectedProduct(null)}
-              className="absolute top-4 right-4 h-7 w-7 rounded-[6px] border border-bento-border bg-bento-card hover:bg-bento-card-hover shadow-bento-btn active:translate-y-[1px] active:shadow-bento-btn-active flex items-center justify-center text-bento-text-muted hover:text-bento-text cursor-pointer focus:outline-none transition-all z-20"
-            >
-              <X className="h-4 w-4" />
-            </button>
 
-            <div className="w-full md:w-1/2 aspect-square bg-bento-card-sunken border border-bento-border-light rounded-[12px] shadow-bento-sunken overflow-hidden relative flex items-center justify-center">
-              {selectedProduct.images?.[0]?.url ? (
-                <img src={selectedProduct.images[0].url} alt={selectedProduct.title} className="w-full h-full object-cover" />
-              ) : (
-                <ImageIcon className="h-12 w-12 text-bento-text-faint" />
-              )}
-              <div className="absolute bottom-4 right-4 bg-bento-card/90 backdrop-blur-md border border-bento-border px-3 py-1 rounded-[6px] shadow-bento">
-                <span className="text-[13px] font-bold text-bento-text font-['DM_Mono']">
-                  {selectedProduct.price?.currency || 'INR'} {selectedProduct.price?.amount}
-                </span>
-              </div>
-            </div>
-
-            <div className="w-full md:w-1/2 flex flex-col justify-between py-2 text-left">
-              <div className="space-y-4">
-                <div>
-                  <span className="text-[10px] font-semibold text-emerald-500 uppercase tracking-widest font-['DM_Mono']">
-                    {selectedProduct.category || 'IN STOCK'}
-                  </span>
-                  <h3 className="text-[20px] font-bold text-bento-text tracking-tight mt-1 leading-tight">
-                    {selectedProduct.title}
-                  </h3>
-                </div>
-
-                <p className="text-[12px] text-bento-text-muted leading-relaxed font-light">
-                  {selectedProduct.description}
-                </p>
-
-                <div className="bg-bento-card-sunken border border-bento-border-light p-3 rounded-[8px] shadow-bento-sunken space-y-1.5 font-['DM_Mono'] text-[9px] text-bento-text-muted">
-                  <div className="flex justify-between border-b border-bento-border-light/40 pb-1">
-                    <span>MATERIAL</span>
-                    <span className="text-bento-text">{selectedProduct.specs?.material || 'Premium Fabric Blend'}</span>
-                  </div>
-                  <div className="flex justify-between border-b border-bento-border-light/40 pb-1">
-                    <span>WEIGHT</span>
-                    <span className="text-bento-text">{selectedProduct.specs?.weight || 'Heavyweight Combed'}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>FIT</span>
-                    <span className="text-bento-text">{selectedProduct.specs?.fit || 'Structured Fit'}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-6 border-t border-bento-border-light mt-6 flex gap-3">
-                <Button
-                  onClick={() => {
-                    addToCart(selectedProduct);
-                    setSelectedProduct(null);
-                  }}
-                  className="flex-1 h-11 text-[12px] uppercase font-semibold tracking-wider gap-2 shadow-bento-btn"
-                >
-                  Add to Cart
-                </Button>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
     </div>
   );
 }

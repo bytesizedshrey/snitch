@@ -167,7 +167,7 @@ export default function Dashboard() {
             <span className="text-[14px] font-medium tracking-tight text-bento-text select-none">
               snitch. console
             </span>
-            <span className="font-['DM_Mono'] text-[9px] uppercase tracking-widest text-emerald-500 border border-emerald-500/20 px-1.5 py-0.5 rounded-[4px] bg-emerald-500/5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]">
+            <span className="font-['DM_Mono'] text-[9px] uppercase tracking-widest text-bento-text-muted border border-bento-border-light px-1.5 py-0.5 rounded-[4px] bg-bento-card-sunken shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]">
               Seller Dashboard
             </span>
           </div>
@@ -189,7 +189,7 @@ export default function Dashboard() {
         <main className="max-w-7xl mx-auto px-6 py-10 w-full space-y-6">
           {/* Success / Error Messages (skeuomorphic notification) */}
           {successMsg && (
-            <div className="text-[13px] text-emerald-400 bg-emerald-500/5 border border-emerald-500/20 p-4 rounded-[8px] shadow-[inset_2px_2px_5px_rgba(0,0,0,0.5)] transition-all">
+            <div className="text-[13px] text-bento-text bg-bento-card-sunken/40 border border-bento-border-light p-4 rounded-[8px] shadow-[inset_2px_2px_5px_rgba(0,0,0,0.5)] transition-all">
               {successMsg}
             </div>
           )}
@@ -234,7 +234,7 @@ export default function Dashboard() {
                   <span className="flex items-center gap-1.5">
                     <Package className="h-3.5 w-3.5" /> Metrics
                   </span>
-                  <span className="text-emerald-500 font-['DM_Mono'] tracking-normal text-[8px] bg-emerald-500/5 px-1.5 py-0.5 rounded border border-emerald-500/10">
+                  <span className="text-bento-text-muted font-['DM_Mono'] tracking-normal text-[8px] bg-bento-card-sunken px-1.5 py-0.5 rounded border border-bento-border-light">
                     Active
                   </span>
                 </div>

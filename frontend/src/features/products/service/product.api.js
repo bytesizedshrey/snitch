@@ -37,3 +37,8 @@ export async function updateProduct(id, formData) {
     })
     return response.data
 }
+
+export async function getProductDetails(id) {
+    const response = await productApiInstance.get(`/detail/${id}`)
+    return response.data
+}

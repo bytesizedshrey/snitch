@@ -14,8 +14,8 @@
   --color-bento-text-muted: var(--bento-text-muted);
   --color-bento-text-faint: var(--bento-text-faint);
 
-  --color-emerald-custom: #10b981;
-  --color-emerald-custom-light: rgba(16, 185, 129, 0.1);
+  --color-emerald-custom: #71717a;
+  --color-emerald-custom-light: rgba(113, 113, 122, 0.1);
 
   --shadow-bento: var(--shadow-bento-val);
   --shadow-bento-sunken: var(--shadow-bento-sunken-val);

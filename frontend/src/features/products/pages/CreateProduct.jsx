@@ -105,7 +105,7 @@ export default function CreateProduct() {
           </div>
           <div className="flex items-center gap-4">
             <ThemeToggle />
-            <span className="font-['DM_Mono'] text-[9px] uppercase tracking-widest text-emerald-500 border border-emerald-500/20 px-1.5 py-0.5 rounded-[4px] bg-emerald-500/5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]">
+            <span className="font-['DM_Mono'] text-[9px] uppercase tracking-widest text-bento-text-muted border border-bento-border-light px-1.5 py-0.5 rounded-[4px] bg-bento-card-sunken shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]">
               Console v1.0
             </span>
           </div>
@@ -129,7 +129,7 @@ export default function CreateProduct() {
         {(successMsg || errorMsg) && (
           <div className="w-full transition-all shrink-0">
             {successMsg && (
-              <div className="text-[12px] text-emerald-400 bg-emerald-500/5 border border-emerald-500/20 px-4 py-2.5 rounded-[6px] shadow-[inset_2px_2px_5px_rgba(0,0,0,0.5)]">
+              <div className="text-[12px] text-bento-text bg-bento-card-sunken/40 border border-bento-border-light px-4 py-2.5 rounded-[6px] shadow-[inset_2px_2px_5px_rgba(0,0,0,0.5)]">
                 {successMsg} {responseVal && <span className="font-['DM_Mono'] text-[10px] text-[#777] ml-2">ID: {responseVal._id}</span>}
               </div>
             )}

@@ -5,7 +5,7 @@ export const BiomorphicBackground = () => {
       {/* Dynamic Floating Biomorphic Blobs */}
       {/* Blob 1: Top Right (Soft Emerald-ish/Theme matched) */}
       <div className="absolute top-0 right-0 w-[45vw] h-[45vw] max-w-[600px] max-h-[600px] opacity-[0.25] dark:opacity-[0.15] translate-x-[15%] -translate-y-[15%] mix-blend-multiply dark:mix-blend-screen transition-all duration-1000 animate-biomorphic-float">
-        <svg viewBox="0 0 200 200" className="w-full h-full fill-emerald-500/15 dark:fill-emerald-500/10">
+        <svg viewBox="0 0 200 200" className="w-full h-full fill-zinc-500/15 dark:fill-zinc-700/10">
           <path d="M45,-63C58,-56,69,-43,74,-28C79,-13,78,3,73,17C68,31,59,42,47,51C35,60,20,67,4,69C-12,71,-29,68,-43,60C-57,52,-68,39,-73,24C-78,9,-77,-8,-71,-22C-65,-36,-54,-47,-41,-54C-28,-61,-14,-64,1,-66C16,-68,32,-70,45,-63Z" transform="translate(100, 100)" />
         </svg>
       </div>
