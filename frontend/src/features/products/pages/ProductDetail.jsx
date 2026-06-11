@@ -95,7 +95,7 @@ export default function ProductDetail() {
       <BiomorphicBackground />
 
       {/* Header */}
-      <header className="border-b border-bento-border bg-bento-card/80 backdrop-blur-md sticky top-0 z-50 shadow-[0_2px_15px_rgba(0,0,0,0.1)]">
+      <header className="border-b border-bento-border bg-bento-card/80 backdrop-blur-md sticky top-0 z-50 shadow-bento">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link to="/" className="text-[12px] text-bento-text-faint hover:text-bento-text transition-colors flex items-center gap-1.5 cursor-pointer">
@@ -306,7 +306,7 @@ export default function ProductDetail() {
             className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 transition-opacity animate-fade-in"
             onClick={() => setCartOpen(false)}
           />
-          <div className="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-bento-card border-l border-bento-border p-6 shadow-[-10px_0_30px_rgba(0,0,0,0.25)] flex flex-col justify-between select-none animate-fade-in">
+          <div className="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-bento-card border-l border-bento-border p-6 shadow-bento flex flex-col justify-between select-none animate-fade-in">
             <div className="absolute top-0 bottom-0 left-0 w-[1px] bg-bento-border pointer-events-none" />
             
             <div className="flex items-center justify-between border-b border-bento-border-light pb-4 mb-4">

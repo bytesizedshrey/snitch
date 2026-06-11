@@ -281,3 +281,94 @@ export async function addProductVariant(req, res) {
         return res.status(500).json({ message: 'Server error' })
     }
 }
+
+// Update a product variant
+export async function updateProductVariant(req, res) {
+    try {
+        const { productId, variantId } = req.params
+        const body = req.body || {}
+        const { size, color, priceAmount, priceCurrency, stock } = body
+
+        const product = await productModel.findById(productId)
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' })
+        }
+
+        if (product.seller.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ message: 'Forbidden: You do not own this product.' })
+        }
+
+        const variant = product.variants.id(variantId)
+        if (!variant) {
+            return res.status(404).json({ message: 'Variant not found' })
+        }
+
+        if (size !== undefined) variant.size = size
+        if (color !== undefined) variant.color = color
+        if (stock !== undefined) variant.stock = Number(stock)
+        
+        if (priceAmount !== undefined) {
+            if (!variant.price) variant.price = {}
+            variant.price.amount = Number(priceAmount)
+        }
+        if (priceCurrency !== undefined) {
+            if (!variant.price) variant.price = {}
+            variant.price.currency = priceCurrency
+        }
+
+        // Handle file uploads from multer if any
+        if (req.files && req.files.length > 0) {
+            let parsedImages = []
+            for (const file of req.files) {
+                const uploadResult = await uploadFile({
+                    buffer: file.buffer,
+                    fileName: `${Date.now()}-${file.originalname}`
+                })
+                parsedImages.push({ url: uploadResult.url })
+            }
+            variant.images = parsedImages
+        }
+
+        await product.save()
+
+        return res.status(200).json({
+            message: 'Variant updated successfully',
+            product
+        })
+    } catch (error) {
+        console.error('Update Product Variant Error:', error)
+        return res.status(500).json({ message: 'Server error' })
+    }
+}
+
+// Delete a product variant
+export async function deleteProductVariant(req, res) {
+    try {
+        const { productId, variantId } = req.params
+
+        const product = await productModel.findById(productId)
+        if (!product) {
+            return res.status(404).json({ message: 'Product not found' })
+        }
+
+        if (product.seller.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ message: 'Forbidden: You do not own this product.' })
+        }
+
+        const variantIndex = product.variants.findIndex(v => v._id.toString() === variantId)
+        if (variantIndex === -1) {
+            return res.status(404).json({ message: 'Variant not found' })
+        }
+
+        product.variants.splice(variantIndex, 1)
+        await product.save()
+
+        return res.status(200).json({
+            message: 'Variant deleted successfully',
+            product
+        })
+    } catch (error) {
+        console.error('Delete Product Variant Error:', error)
+        return res.status(500).json({ message: 'Server error' })
+    }
+}

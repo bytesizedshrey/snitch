@@ -4,6 +4,7 @@ import Register from '../features/auth/pages/Register'
 import Login from '../features/auth/pages/Login'
 import Dashboard from '../features/products/pages/Dashboard'
 import CreateProduct from '../features/products/pages/CreateProduct'
+import SellerProductDetails from '../features/products/pages/SellerProductDetails'
 import Protected from '../features/auth/components/Protected';
 import ProductDetail from '../features/products/pages/ProductDetail';
 
@@ -29,15 +30,15 @@ const router = createBrowserRouter([
     children: [
       {
         path : '/seller/create-product',
-        element : <Protected
-        role="seller"
-        ><CreateProduct/></Protected>
+        element : <Protected role="seller"><CreateProduct/></Protected>
       },
       {
         path : '/seller/dashboard',
-        element : <Protected>
-           <Dashboard/>
-        </Protected>
+        element : <Protected><Dashboard/></Protected>
+      },
+      {
+        path : '/seller/product/:productId',
+        element : <Protected role="seller"><SellerProductDetails/></Protected>
       }
     ]
   },

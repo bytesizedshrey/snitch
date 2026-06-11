@@ -8,6 +8,7 @@ import { Label } from '../../../components/ui/label';
 import { Checkbox } from '../../../components/ui/checkbox';
 import { GoogleButton } from '../../../components/ui/google-button';
 import { Eye, EyeOff } from 'lucide-react';
+import { ThemeToggle } from '../../../components/ThemeToggle';
 
 const formatPhoneNumber = (value) => {
   if (!value) return value;
@@ -109,7 +110,10 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen bg-bento-bg flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 font-['Noto_Sans']">
+    <div className="min-h-screen bg-bento-bg flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 font-['Noto_Sans'] relative">
+      <div className="absolute top-6 right-6 z-50">
+        <ThemeToggle />
+      </div>
       <div className="sm:mx-auto sm:w-full sm:max-w-[400px]">
         <Card className="p-6">
           <div className="mb-8 text-center">

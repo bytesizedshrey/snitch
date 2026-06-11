@@ -31,7 +31,7 @@ const BentoCard = ({
       "group relative flex flex-col justify-between overflow-hidden rounded-[12px] cursor-pointer",
       // Custom Skeuomorphic Styles
       "bg-bento-card border border-bento-border shadow-bento transition-all duration-300",
-      "hover:-translate-y-1 hover:shadow-[12px_12px_30px_rgba(0,0,0,0.15)] dark:hover:shadow-[12px_12px_30px_rgba(0,0,0,0.9)]",
+      "hover:-translate-y-1 hover:shadow-bento dark:hover:shadow-bento",
       className
     )}
   >

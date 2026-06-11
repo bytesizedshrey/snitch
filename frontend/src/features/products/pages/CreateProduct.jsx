@@ -94,7 +94,7 @@ export default function CreateProduct() {
   return (
     <div className="h-screen bg-bento-bg text-bento-text flex flex-col font-['Noto_Sans'] antialiased overflow-hidden">
       {/* Header */}
-      <header className="border-b border-bento-border bg-bento-card/80 backdrop-blur-md sticky top-0 z-50 shadow-[0_2px_15px_rgba(0,0,0,0.6)] shrink-0">
+      <header className="border-b border-bento-border bg-bento-card/80 backdrop-blur-md sticky top-0 z-50 shadow-bento shrink-0">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link to="/seller/dashboard" className="text-[12px] text-bento-text-faint hover:text-bento-text transition-colors flex items-center gap-1.5 cursor-pointer">
@@ -105,7 +105,7 @@ export default function CreateProduct() {
           </div>
           <div className="flex items-center gap-4">
             <ThemeToggle />
-            <span className="font-['DM_Mono'] text-[9px] uppercase tracking-widest text-bento-text-muted border border-bento-border-light px-1.5 py-0.5 rounded-[4px] bg-bento-card-sunken shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]">
+            <span className="font-['DM_Mono'] text-[9px] uppercase tracking-widest text-bento-text-muted border border-bento-border-light px-1.5 py-0.5 rounded-[4px] bg-bento-card-sunken shadow-bento-btn">
               Console v1.0
             </span>
           </div>
@@ -129,12 +129,12 @@ export default function CreateProduct() {
         {(successMsg || errorMsg) && (
           <div className="w-full transition-all shrink-0">
             {successMsg && (
-              <div className="text-[12px] text-bento-text bg-bento-card-sunken/40 border border-bento-border-light px-4 py-2.5 rounded-[6px] shadow-[inset_2px_2px_5px_rgba(0,0,0,0.5)]">
+              <div className="text-[12px] text-bento-text bg-bento-card-sunken/40 border border-bento-border-light px-4 py-2.5 rounded-[6px] shadow-bento-btn">
                 {successMsg} {responseVal && <span className="font-['DM_Mono'] text-[10px] text-[#777] ml-2">ID: {responseVal._id}</span>}
               </div>
             )}
             {errorMsg && (
-              <div className="text-[12px] text-[#ffb4ab] bg-[#93000a]/5 border border-[#93000a]/20 px-4 py-2.5 rounded-[6px] shadow-[inset_2px_2px_5px_rgba(0,0,0,0.5)]">
+              <div className="text-[12px] text-[#ffb4ab] bg-[#93000a]/5 border border-[#93000a]/20 px-4 py-2.5 rounded-[6px] shadow-bento-btn">
                 {errorMsg}
               </div>
             )}
@@ -168,7 +168,7 @@ export default function CreateProduct() {
                   value={formData.title}
                   onChange={handleInputChange}
                   disabled={submitting}
-                  className="bg-bento-card-sunken border-[#1c1c1c] text-bento-text shadow-[inset_2px_2px_5px_rgba(0,0,0,0.8),inset_-2px_-2px_5px_rgba(255,255,255,0.01)] focus:border-[#333333] transition-all h-[38px] text-xs"
+                  className="bg-bento-card-sunken border-bento-border-light text-bento-text shadow-bento-btn focus:border-[#333333] transition-all h-[38px] text-xs"
                 />
               </div>
 
@@ -185,7 +185,7 @@ export default function CreateProduct() {
                   value={formData.description}
                   onChange={handleInputChange}
                   disabled={submitting}
-                  className="w-full flex-1 rounded-[6px] border border-[#1c1c1c] bg-bento-card-sunken px-3 py-2 text-xs text-bento-text placeholder:text-[#444444] shadow-[inset_2px_2px_5px_rgba(0,0,0,0.8),inset_-2px_-2px_5px_rgba(255,255,255,0.01)] focus:border-[#333] focus:outline-none transition-all resize-none min-h-[100px]"
+                  className="w-full flex-1 rounded-[6px] border border-bento-border-light bg-bento-card-sunken px-3 py-2 text-xs text-bento-text placeholder:text-[#444444] shadow-bento-btn focus:border-[#333] focus:outline-none transition-all resize-none min-h-[100px]"
                 />
               </div>
             </div>
@@ -212,7 +212,7 @@ export default function CreateProduct() {
                     value={formData.priceAmount}
                     onChange={handleInputChange}
                     disabled={submitting}
-                    className="bg-bento-card-sunken border-[#1c1c1c] text-bento-text shadow-[inset_2px_2px_5px_rgba(0,0,0,0.8),inset_-2px_-2px_5px_rgba(255,255,255,0.01)] focus:border-[#333333] transition-all h-[38px] text-xs"
+                    className="bg-bento-card-sunken border-bento-border-light text-bento-text shadow-bento-btn focus:border-[#333333] transition-all h-[38px] text-xs"
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -226,7 +226,7 @@ export default function CreateProduct() {
                       value={formData.priceCurrency}
                       onChange={handleInputChange}
                       disabled={submitting}
-                      className="w-full h-[38px] rounded-[6px] border border-[#1c1c1c] bg-bento-card-sunken px-3 text-xs text-bento-text focus:border-[#333] focus:outline-none shadow-[inset_2px_2px_5px_rgba(0,0,0,0.8),inset_-2px_-2px_5px_rgba(255,255,255,0.01)] transition-all cursor-pointer appearance-none"
+                      className="w-full h-[38px] rounded-[6px] border border-bento-border-light bg-bento-card-sunken px-3 text-xs text-bento-text focus:border-[#333] focus:outline-none shadow-bento-btn transition-all cursor-pointer appearance-none"
                     >
                       <option value="INR">INR (₹)</option>
                       <option value="USD">USD ($)</option>
@@ -261,7 +261,7 @@ export default function CreateProduct() {
 
               {/* Skeuomorphic Sunken Dropzone */}
               {files.length < 7 && (
-                <div className="border border-bento-border-light rounded-[8px] p-4 bg-bento-card-sunken text-center shadow-[inset_3px_3px_8px_rgba(0,0,0,0.95),inset_-2px_-2px_8px_rgba(255,255,255,0.01)] relative hover:border-bento-border-light transition-colors duration-250 cursor-pointer group shrink-0">
+                <div className="border border-bento-border-light rounded-[8px] p-4 bg-bento-card-sunken text-center shadow-bento-btn relative hover:border-bento-border-light transition-colors duration-250 cursor-pointer group shrink-0">
                   <input
                     id="images"
                     type="file"
@@ -272,7 +272,7 @@ export default function CreateProduct() {
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                   />
                   <div className="space-y-1.5 pointer-events-none">
-                    <div className="h-8 w-8 rounded-full bg-[#0d0d0d] shadow-[3px_3px_6px_rgba(0,0,0,0.5),-1px_-1px_3px_rgba(255,255,255,0.02)] border border-[#1c1c1c] flex items-center justify-center mx-auto group-hover:scale-[1.03] transition-transform">
+                    <div className="h-8 w-8 rounded-full bg-bento-card-sunken shadow-bento border border-bento-border-light flex items-center justify-center mx-auto group-hover:scale-[1.03] transition-transform">
                       <Plus className="h-3.5 w-3.5 text-bento-text-muted" />
                     </div>
                     <p className="text-[11px] text-bento-text-muted font-light">Add photos</p>
@@ -283,13 +283,13 @@ export default function CreateProduct() {
 
               {/* Image Previews list (Vertical list for Bento sidebar style) */}
               {files.length > 0 && (
-                <div className="space-y-1.5 flex-1 overflow-y-auto pr-1 shadow-[inset_0_2px_5px_rgba(0,0,0,0.3)] bg-bento-card-sunken/10 p-1.5 rounded border border-bento-border-light">
+                <div className="space-y-1.5 flex-1 overflow-y-auto pr-1 shadow-bento-btn bg-bento-card-sunken/10 p-1.5 rounded border border-bento-border-light">
                   {files.map((file, idx) => {
                     const objectUrl = URL.createObjectURL(file);
                     return (
                       <div 
                         key={idx} 
-                        className="flex items-center justify-between p-1.5 bg-bento-card-sunken border border-bento-border-light rounded-[6px] shadow-[inset_1px_1px_3px_rgba(0,0,0,0.5)] gap-3"
+                        className="flex items-center justify-between p-1.5 bg-bento-card-sunken border border-bento-border-light rounded-[6px] shadow-bento-btn gap-3"
                       >
                         <div className="flex items-center gap-3">
                           <div className="h-9 w-9 rounded-[4px] border border-bento-border overflow-hidden flex items-center justify-center bg-black">
@@ -303,7 +303,7 @@ export default function CreateProduct() {
                         <button
                           type="button"
                           onClick={() => removeFile(idx)}
-                          className="h-5 w-5 rounded-[4px] border border-bento-border-light bg-bento-card hover:bg-[#252525] shadow-[2px_2px_4px_rgba(0,0,0,0.8),-1px_-1px_2px_rgba(255,255,255,0.03),inset_1px_1px_1px_rgba(255,255,255,0.1),inset_-1px_-1px_1px_rgba(0,0,0,0.6)] active:translate-y-[1px] active:shadow-[inset_2px_2px_4px_rgba(0,0,0,0.6)] transition-all flex items-center justify-center text-bento-text-muted hover:text-bento-text cursor-pointer focus:outline-none"
+                          className="h-5 w-5 rounded-[4px] border border-bento-border-light bg-bento-card hover:bg-bento-card-hover shadow-bento-btn active:translate-y-[1px] active:shadow-bento-btn-active transition-all flex items-center justify-center text-bento-text-muted hover:text-bento-text cursor-pointer focus:outline-none"
                         >
                           <X className="h-2.5 w-2.5" />
                         </button>

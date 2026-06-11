@@ -117,7 +117,7 @@ export default function Home() {
       <BiomorphicBackground />
 
       {/* E-commerce Header */}
-      <header className="border-b border-bento-border bg-bento-card/80 backdrop-blur-md sticky top-0 z-50 shadow-[0_2px_15px_rgba(0,0,0,0.1)]">
+      <header className="border-b border-bento-border bg-bento-card/80 backdrop-blur-md sticky top-0 z-50 shadow-bento">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-6">
             <span className="text-[18px] font-bold tracking-tight text-bento-text select-none">snitch.</span>
@@ -272,7 +272,7 @@ export default function Home() {
                   <div className="flex items-center gap-2">
                     <span className="relative flex h-2 w-2">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-zinc-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-zinc-500 shadow-[0_0_8px_rgba(113,113,122,0.8)]"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-zinc-500 shadow-bento"></span>
                     </span>
                     <span className="text-[10px] font-semibold uppercase tracking-wider text-bento-text-muted font-['DM_Mono']">
                       Spotlight Interactive
@@ -543,7 +543,7 @@ export default function Home() {
             className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 transition-opacity animate-fade-in"
             onClick={() => setCartOpen(false)}
           />
-          <div className="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-bento-card border-l border-bento-border p-6 shadow-[-10px_0_30px_rgba(0,0,0,0.25)] flex flex-col justify-between select-none animate-fade-in">
+          <div className="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-bento-card border-l border-bento-border p-6 shadow-bento flex flex-col justify-between select-none animate-fade-in">
             <div className="absolute top-0 bottom-0 left-0 w-[1px] bg-bento-border pointer-events-none" />
             
             <div className="flex items-center justify-between border-b border-bento-border-light pb-4 mb-4">
