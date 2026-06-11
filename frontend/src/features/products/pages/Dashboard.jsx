@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useAuth } from "../../auth/hook/useAuth";
@@ -21,12 +21,8 @@ import {
   Image as ImageIcon,
   Loader2,
   Package,
-  Tag,
-  Coins,
-  X,
   Calendar,
   User,
-  Eye,
 } from "lucide-react";
 
 export default function Dashboard() {
@@ -50,19 +46,7 @@ export default function Dashboard() {
   });
   const [editFiles, setEditFiles] = useState([]);
 
-  useEffect(() => {
-    if (!user) {
-      navigate("/login");
-      return;
-    }
-    if (user.role !== "seller") {
-      navigate("/");
-      return;
-    }
-    fetchProducts();
-  }, [user]);
-
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
       await handleGetSellerProduct();
@@ -72,7 +56,22 @@ export default function Dashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [handleGetSellerProduct]);
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    if (user.role !== "seller") {
+      navigate("/");
+      return;
+    }
+    const timer = setTimeout(() => {
+      fetchProducts();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [user, navigate, fetchProducts]);
 
   const handleEditInputChange = (e) => {
     const { name, value } = e.target;

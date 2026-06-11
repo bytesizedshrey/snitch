@@ -1,7 +1,7 @@
 import * as React from "react"
 import { cn } from "../../lib/utils"
 
-const Button = React.forwardRef(({ className, variant, size, ...props }, ref) => {
+const Button = React.forwardRef(({ className, variant, ...props }, ref) => {
   return (
     <button
       className={cn(

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Provider, useSelector } from 'react-redux'
 import { store } from './app.store'
 import AppRoutes from './app.routes'
@@ -13,7 +13,7 @@ const AppContent = () => {
     handleFetchMe().finally(() => {
       setInit(true)
     })
-  }, [])
+  }, [handleFetchMe])
 
   if (!init) {
     return (

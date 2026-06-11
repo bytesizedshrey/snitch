@@ -1,4 +1,3 @@
-import React from 'react'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Home from '../features/home/pages/Home'
 import Register from '../features/auth/pages/Register'
@@ -7,7 +6,7 @@ import Dashboard from '../features/products/pages/Dashboard'
 import CreateProduct from '../features/products/pages/CreateProduct'
 import Protected from '../features/auth/components/Protected';
 
-export const router = createBrowserRouter([
+const router = createBrowserRouter([
   {
     path: "/",
     element: <Home />

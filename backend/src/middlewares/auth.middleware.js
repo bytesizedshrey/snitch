@@ -15,7 +15,7 @@ export const authenticateSeller = async(req,res,next) =>{
         const user = await userModel.findById(decoded.id)
 
         if(!user){
-            return res.status(400).json({message : 'Unauthorized'})
+            return res.status(401).json({message : 'Unauthorized'})
         }
 
         if(user.role !== 'seller'){
@@ -26,7 +26,7 @@ export const authenticateSeller = async(req,res,next) =>{
         next()
     } catch (err){
         console.log(err)
-        return res.status(400).json({message : 'Unauthorized'})
+        return res.status(401).json({message : 'Unauthorized'})
     }
 }
 
@@ -42,13 +42,13 @@ export const authenticateUser = async(req,res,next) =>{
         const user = await userModel.findById(decoded.id)
 
         if(!user){
-            return res.status(400).json({message : 'Unauthorized'})
+            return res.status(401).json({message : 'Unauthorized'})
         }
 
         req.user = user
         next()
     } catch (err){
         console.log(err)
-        return res.status(400).json({message : 'Unauthorized'})
+        return res.status(401).json({message : 'Unauthorized'})
     }
 }

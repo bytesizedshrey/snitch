@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hook/useAuth';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
@@ -8,23 +8,31 @@ import { GoogleButton } from '../../../components/ui/google-button';
 import { Eye, EyeOff } from 'lucide-react';
 
 export default function Login() {
-  const [searchParams] = useSearchParams();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
+  const [errorMsg, setErrorMsg] = useState(() => {
+    // Check initial search params for google auth failure error
+    const params = new URLSearchParams(window.location.search);
+    return params.get('error') === 'google_auth_failed'
+      ? 'Google authentication failed. Please try again.'
+      : '';
+  });
   
-  const { handleLogin, loading, error } = useAuth();
+  const { handleLogin, loading, error, user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const errorParam = searchParams.get('error');
-    if (errorParam === 'google_auth_failed') {
-      setErrorMsg('Google authentication failed. Please try again.');
+    if (user) {
+      if (user.role === 'seller') {
+        navigate('/seller/dashboard', { replace: true });
+      } else {
+        navigate('/', { replace: true });
+      }
     }
-  }, [searchParams]);
+  }, [user, navigate]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;

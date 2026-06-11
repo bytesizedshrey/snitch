@@ -1,15 +1,14 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useProduct } from '../hook/useProduct';
 import { Button } from '../../../components/ui/button';
 import { Input } from '../../../components/ui/input';
 import { Label } from '../../../components/ui/label';
-import { ArrowLeft, Image as ImageIcon, Loader2, Plus, X, Tag, FileText, Coins, Sparkles, LayoutGrid } from 'lucide-react';
+import { ArrowLeft, Image as ImageIcon, Loader2, Plus, X, Tag, Coins, Sparkles, LayoutGrid } from 'lucide-react';
 import { ThemeToggle } from '../../../components/ThemeToggle';
 
 export default function CreateProduct() {
   const { handleCreateProduct } = useProduct();
-  const navigate = useNavigate();
 
   // Form states
   const [formData, setFormData] = useState({

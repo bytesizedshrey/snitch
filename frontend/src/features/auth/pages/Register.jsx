@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hook/useAuth';
 import { Button } from '../../../components/ui/button';
@@ -36,8 +36,18 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   
-  const { handleRegister, loading, error } = useAuth();
+  const { handleRegister, loading, error, user } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      if (user.role === 'seller') {
+        navigate('/seller/dashboard', { replace: true });
+      } else {
+        navigate('/', { replace: true });
+      }
+    }
+  }, [user, navigate]);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
