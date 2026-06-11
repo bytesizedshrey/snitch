@@ -15,7 +15,7 @@ function validateRequest(req, res, next) {
 
 export const addToCartValidator = [
     body('productId').notEmpty().withMessage('productId is required').isMongoId().withMessage('Invalid productId format'),
-    body('variantId').notEmpty().withMessage('variantId is required').isMongoId().withMessage('Invalid variantId format'),
+    body('variantId').optional({ nullable: true, checkFalsy: true }).isMongoId().withMessage('Invalid variantId format'),
     body('quantity').optional().isInt({ min: 1 }).withMessage('quantity must be an integer greater than 0'),
     validateRequest
 ];

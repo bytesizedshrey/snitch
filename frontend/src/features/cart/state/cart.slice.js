@@ -74,11 +74,19 @@ const cartSlice = createSlice({
         cartData: null,
         loading: false,
         error: null,
+        toast: {
+            show: false,
+            message: "",
+            product: null
+        }
     },
     reducers: {
         resetCartState: (state) => {
             state.cartData = null;
             state.error = null;
+        },
+        hideToast: (state) => {
+            state.toast.show = false;
         }
     },
     extraReducers: (builder) => {
@@ -104,6 +112,24 @@ const cartSlice = createSlice({
             .addCase(addToCart.fulfilled, (state, action) => {
                 state.loading = false;
                 state.cartData = action.payload;
+                
+                // Find the product info of the added item to display in the toast
+                const addedItem = action.payload?.items?.find(
+                    item => (item.product?._id || item.product) === action.meta.arg.productId
+                );
+                
+                if (addedItem?.product) {
+                    state.toast = {
+                        show: true,
+                        message: "Item added to bag",
+                        product: {
+                            title: addedItem.product.title,
+                            image: addedItem.product.images?.[0]?.url,
+                            price: addedItem.product.price,
+                            quantity: action.meta.arg.quantity || 1
+                        }
+                    };
+                }
             })
             .addCase(addToCart.rejected, (state, action) => {
                 state.loading = false;
@@ -151,5 +177,5 @@ const cartSlice = createSlice({
     }
 });
 
-export const { resetCartState } = cartSlice.actions;
+export const { resetCartState, hideToast } = cartSlice.actions;
 export default cartSlice.reducer;

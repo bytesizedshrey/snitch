@@ -3,6 +3,7 @@ import { Provider, useSelector } from 'react-redux'
 import { store } from './app.store'
 import AppRoutes from './app.routes'
 import { useAuth } from '../features/auth/hook/useAuth'
+import { CartToast } from '../features/cart/components/CartToast'
 import './App.css'
 
 const AppContent = () => {
@@ -27,7 +28,10 @@ const AppContent = () => {
   }
 
   return (
-    <AppRoutes />
+    <>
+      <AppRoutes />
+      <CartToast />
+    </>
   )
 }
 

@@ -20,16 +20,38 @@ export async function getCart(req, res) {
 // Add item to cart
 export async function addToCart(req, res) {
     try {
-        const { productId, variantId, quantity = 1 } = req.body;
+        const { productId, quantity = 1 } = req.body;
+        let { variantId } = req.body;
 
-        if (!productId || !variantId) {
-            return res.status(400).json({ message: "productId and variantId are required" });
+        if (!productId) {
+            return res.status(400).json({ message: "productId is required" });
         }
 
-        // Check if product and variant exist
+        // Check if product exists
         const product = await productDao.findProductById(productId);
         if (!product) {
             return res.status(404).json({ message: "Product not found" });
+        }
+
+        // If no variantId provided, default to first variant
+        if (!variantId) {
+            if (product.variants && product.variants.length > 0) {
+                variantId = product.variants[0]._id.toString();
+            } else {
+                // Dynamically create a default variant since none exist
+                const defaultVariant = {
+                    size: "OS",
+                    color: "Default",
+                    price: {
+                        amount: product.price?.amount || 0,
+                        currency: product.price?.currency || 'INR'
+                    },
+                    stock: 100
+                };
+                product.variants.push(defaultVariant);
+                await product.save();
+                variantId = product.variants[product.variants.length - 1]._id.toString();
+            }
         }
 
         const variant = product.variants.id(variantId);

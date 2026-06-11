@@ -1,4 +1,5 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import AppLayout from './AppLayout'
 import Home from '../features/home/pages/Home'
 import Register from '../features/auth/pages/Register'
 import Login from '../features/auth/pages/Login'
@@ -7,11 +8,25 @@ import CreateProduct from '../features/products/pages/CreateProduct'
 import SellerProductDetails from '../features/products/pages/SellerProductDetails'
 import Protected from '../features/auth/components/Protected';
 import ProductDetail from '../features/products/pages/ProductDetail';
+import Cart from '../features/cart/pages/Cart';
 
 const router = createBrowserRouter([
   {
-    path: "/",
-    element: <Home />
+    element: <AppLayout />,
+    children: [
+      {
+        path: "/",
+        element: <Home />
+      },
+      {
+        path : "/product/:productId",
+        element : <ProductDetail/>
+      },
+      {
+        path : "/cart",
+        element : <Protected><Cart /></Protected>
+      }
+    ]
   },
   {
     path: "/register",
@@ -41,10 +56,6 @@ const router = createBrowserRouter([
         element : <Protected role="seller"><SellerProductDetails/></Protected>
       }
     ]
-  },
-  {
-    path : "/product/:productId",
-    element : <ProductDetail/>
   }
 ])
 

@@ -71,7 +71,17 @@ export async function createProduct(req, res) {
                 amount: Number(amount),
                 currency
             },
-            images: parsedImages
+            images: parsedImages,
+            variants: [{
+                size: "OS",
+                color: "Default",
+                price: {
+                    amount: Number(amount),
+                    currency
+                },
+                stock: 100,
+                images: parsedImages
+            }]
         })
 
         return res.status(201).json({

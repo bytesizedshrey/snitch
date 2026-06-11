@@ -187,6 +187,31 @@ export default function SellerProductDetails() {
     }
   };
 
+  const handleQuickStockUpdate = async (variantId, currentVariant, newStock) => {
+    if (newStock < 0) return;
+    try {
+      const fd = new FormData();
+      fd.append("size", currentVariant.size || "");
+      fd.append("color", currentVariant.color || "");
+      fd.append("stock", newStock.toString());
+      if (currentVariant.price?.amount) {
+        fd.append("priceAmount", currentVariant.price.amount.toString());
+      }
+      fd.append("priceCurrency", currentVariant.price?.currency || "INR");
+
+      await updateProductVariant(productId, variantId, fd);
+      showSuccess("Stock updated successfully");
+      fetchProduct();
+    } catch (err) {
+      showError(err.response?.data?.message || "Failed to update stock");
+    }
+  };
+
+  const handleToggleAvailability = async (variantId, currentVariant) => {
+    const newStock = currentVariant.stock > 0 ? 0 : 10;
+    await handleQuickStockUpdate(variantId, currentVariant, newStock);
+  };
+
   if (loading) {
     return (
       <div className="h-screen bg-bento-bg flex flex-col items-center justify-center">
@@ -416,10 +441,48 @@ export default function SellerProductDetails() {
                                 {v.size}
                               </span>
                             </div>
-                            <div className="flex items-center gap-4 text-[11px] font-['DM_Mono'] text-bento-text-muted">
-                              <span>Stock: <span className={v.stock > 0 ? "text-bento-text" : "text-[#ffb4ab]"}>{v.stock}</span></span>
+                            <div className="flex flex-wrap items-center gap-3 text-[11px] font-['DM_Mono'] text-bento-text-muted mt-1.5">
+                              {/* Stock Increment/Decrement */}
+                              <div className="flex items-center gap-1.5 bg-bento-card-sunken border border-bento-border-light p-0.5 rounded-[6px] shadow-bento-sunken">
+                                <span className="text-[8px] text-bento-text-faint px-1">STOCK</span>
+                                <button
+                                  type="button"
+                                  onClick={() => handleQuickStockUpdate(v._id, v, v.stock - 1)}
+                                  disabled={v.stock <= 0}
+                                  className="h-5 w-5 rounded-[4px] bg-bento-card border border-bento-border hover:bg-bento-card-hover shadow-bento-btn active:translate-y-[1px] active:shadow-bento-btn-active disabled:opacity-40 disabled:pointer-events-none flex items-center justify-center text-bento-text-muted cursor-pointer transition-all"
+                                >
+                                  -
+                                </button>
+                                <span className={`text-[10px] font-bold px-1 min-w-[16px] text-center ${v.stock > 0 ? "text-bento-text" : "text-[#ffb4ab]"}`}>
+                                  {v.stock}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => handleQuickStockUpdate(v._id, v, v.stock + 1)}
+                                  className="h-5 w-5 rounded-[4px] bg-bento-card border border-bento-border hover:bg-bento-card-hover shadow-bento-btn active:translate-y-[1px] active:shadow-bento-btn-active flex items-center justify-center text-bento-text-muted cursor-pointer transition-all"
+                                >
+                                  +
+                                </button>
+                              </div>
+
+                              {/* Availability Status Button */}
+                              <div className="flex items-center gap-1 bg-bento-card-sunken border border-bento-border-light p-0.5 rounded-[6px] shadow-bento-sunken">
+                                <span className="text-[8px] text-bento-text-faint px-1">STATUS</span>
+                                <button
+                                  type="button"
+                                  onClick={() => handleToggleAvailability(v._id, v)}
+                                  className={`text-[8px] px-1.5 py-0.5 rounded-[4px] border font-bold font-sans transition-all cursor-pointer ${
+                                    v.stock > 0
+                                      ? "bg-zinc-800 dark:bg-zinc-200 text-bento-bg border-transparent shadow-bento-btn shadow-[inset_1px_1px_2px_rgba(255,255,255,0.2)]"
+                                      : "bg-transparent text-[#ffb4ab] border-transparent hover:text-red-400"
+                                  }`}
+                                >
+                                  {v.stock > 0 ? "AVAILABLE" : "OUT OF STOCK"}
+                                </button>
+                              </div>
+
                               {v.price?.amount && (
-                                <span>{v.price.currency} {v.price.amount}</span>
+                                <span className="ml-1">{v.price.currency} {v.price.amount}</span>
                               )}
                             </div>
                           </div>
