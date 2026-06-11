@@ -1,24 +1,29 @@
+import mongoose from 'mongoose';
 import cartDao from '../dao/cart.dao.js';
 import productDao from '../dao/product.dao.js';
 
 // Get user's cart
 export async function getCart(req, res) {
     try {
-        let cart = await cartDao.findPopulatedCartByUser(req.user._id);
-
-        if (!cart) {
-            cart = await cartDao.createCart(req.user._id);
+        // Genz comment: vibe check the cart doc first. if it ghosted us, we manifest a new one fr fr
+        let cartDoc = await cartDao.findCartByUser(req.user._id);
+        if (!cartDoc) {
+            cartDoc = await cartDao.createCart(req.user._id);
         }
+
+        // Genz comment: we gotta populate to see if the prices are actin sus and changed behind our back
+        await cartDoc.populate('items.product', 'title price variants');
 
         let isModified = false;
         let priceChanges = [];
 
-        for (let item of cart.items) {
+        // Genz comment: looping through the bag to fact check the prices no cap
+        for (let item of cartDoc.items) {
             if (item.product) {
                 const product = item.product;
                 const variant = product.variants?.id(item.variant);
                 
-                // Determine latest price from variant (or fallback to product price)
+                // Genz comment: default variants catching strays, we use top level product price for them
                 const isDefaultVariant = variant && variant.size === "OS" && variant.color === "Default";
                 const priceAmount = (variant && variant.price && variant.price.amount !== undefined && variant.price.amount !== null && !isDefaultVariant)
                     ? variant.price.amount
@@ -45,10 +50,54 @@ export async function getCart(req, res) {
         }
 
         if (isModified) {
-            await cartDao.saveCart(cart);
+            // Genz comment: saving the receipts if the prices changed fr
+            await cartDao.saveCart(cartDoc);
         }
 
-        const cartResponse = cart.toJSON ? cart.toJSON() : cart;
+        // Genz comment: let the aggregate pipeline cook to get the W totals and populated data
+        const cartAgg = await cartDao.aggregate([
+            {
+                $match: { user: new mongoose.Types.ObjectId(req.user._id) }
+            },
+            { $unwind: { path: '$items', preserveNullAndEmptyArrays: true } },
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: 'items.product',
+                    foreignField: '_id',
+                    as: 'items.product'
+                }
+            },
+            { $unwind: { path: '$items.product', preserveNullAndEmptyArrays: true } },
+            {
+                $group: {
+                    _id: '$_id',
+                    user: { $first: '$user' },
+                    totalPrice: {
+                        $sum: {
+                            $cond: {
+                                if: { $gt: ['$items.product._id', null] },
+                                then: { $multiply: ['$items.quantity', '$items.price.amount'] },
+                                else: 0
+                            }
+                        }
+                    },
+                    currency: { $first: '$items.price.currency' },
+                    items: {
+                        $push: {
+                            $cond: {
+                                if: { $gt: ['$items.product._id', null] },
+                                then: '$items',
+                                else: '$$REMOVE'
+                            }
+                        }
+                    }
+                }
+            }
+        ]);
+
+        // Genz comment: serving the final bussin cart response
+        let cartResponse = cartAgg[0] || { items: [], totalPrice: 0, currency: 'INR' };
         cartResponse.priceChanges = priceChanges;
 
         res.status(200).json(cartResponse);

@@ -37,6 +37,15 @@ class CartDao {
     async saveCart(cartDoc) {
         return await cartDoc.save();
     }
+
+    /**
+     * Run an aggregation pipeline on the cart collection
+     * @param {Array} pipeline 
+     * @returns {Promise<Array>}
+     */
+    async aggregate(pipeline) {
+        return await cartModel.aggregate(pipeline);
+    }
 }
 
 export default new CartDao();
