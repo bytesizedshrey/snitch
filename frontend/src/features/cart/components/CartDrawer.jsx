@@ -9,7 +9,7 @@ export function CartDrawer({ cartOpen, setCartOpen }) {
   const totalCartItems = items.reduce((total, item) => total + item.quantity, 0);
   
   const cartSubtotal = items.reduce(
-    (total, item) => total + parseFloat(item.product.price?.amount || 0) * item.quantity,
+    (total, item) => total + parseFloat(item.price?.amount ?? item.product.price?.amount ?? 0) * item.quantity,
     0
   );
 
@@ -75,7 +75,7 @@ export function CartDrawer({ cartOpen, setCartOpen }) {
                       {item.product.title}
                     </h4>
                     <p className="text-[10px] text-zinc-500 dark:text-zinc-400 font-['DM_Mono'] font-bold">
-                      {item.product.price?.currency || 'INR'} {item.product.price?.amount}
+                      {item.price?.currency || item.product.price?.currency || 'INR'} {item.price?.amount ?? item.product.price?.amount}
                     </p>
                   </div>
                 </div>

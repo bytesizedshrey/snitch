@@ -70,14 +70,27 @@ export async function addToCart(req, res) {
             cart = await cartDao.createCart(req.user._id);
         }
 
+        // Determine price from variant (or fallback to product price)
+        const priceAmount = (variant.price && variant.price.amount !== undefined && variant.price.amount !== null)
+            ? variant.price.amount
+            : (product.price?.amount || 0);
+
+        const priceCurrency = (variant.price && variant.price.currency)
+            ? variant.price.currency
+            : (product.price?.currency || 'INR');
+
         // Check if item already exists in cart
         const existingItemIndex = cart.items.findIndex(
             (item) => item.product.toString() === productId && item.variant.toString() === variantId
         );
 
         if (existingItemIndex > -1) {
-            // Update quantity
+            // Update quantity and price
             cart.items[existingItemIndex].quantity += Number(quantity);
+            cart.items[existingItemIndex].price = {
+                amount: priceAmount,
+                currency: priceCurrency
+            };
             
             if (cart.items[existingItemIndex].quantity > variant.stock) {
                  return res.status(400).json({ message: "Cannot add more than available stock" });
@@ -87,7 +100,11 @@ export async function addToCart(req, res) {
             cart.items.push({
                 product: productId,
                 variant: variantId,
-                quantity: Number(quantity)
+                quantity: Number(quantity),
+                price: {
+                    amount: priceAmount,
+                    currency: priceCurrency
+                }
             });
         }
 
@@ -134,7 +151,19 @@ export async function updateCartItemQuantity(req, res) {
              return res.status(400).json({ message: "Insufficient stock" });
         }
 
+        const priceAmount = (variant.price && variant.price.amount !== undefined && variant.price.amount !== null)
+            ? variant.price.amount
+            : (product.price?.amount || 0);
+
+        const priceCurrency = (variant.price && variant.price.currency)
+            ? variant.price.currency
+            : (product.price?.currency || 'INR');
+
         item.quantity = quantity;
+        item.price = {
+            amount: priceAmount,
+            currency: priceCurrency
+        };
         await cartDao.saveCart(cart);
 
         await cart.populate('items.product', 'title price images seller');

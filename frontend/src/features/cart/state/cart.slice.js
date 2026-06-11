@@ -125,7 +125,7 @@ const cartSlice = createSlice({
                         product: {
                             title: addedItem.product.title,
                             image: addedItem.product.images?.[0]?.url,
-                            price: addedItem.product.price,
+                            price: addedItem.price || addedItem.product.price,
                             quantity: action.meta.arg.quantity || 1
                         }
                     };

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import priceSchema from "./price.schema.js";
 
 const cartItemSchema = new mongoose.Schema({
     product: {
@@ -15,6 +16,10 @@ const cartItemSchema = new mongoose.Schema({
         required: true,
         min: 1,
         default: 1
+    },
+    price: {
+        type: priceSchema,
+        required: true
     }
 });
 

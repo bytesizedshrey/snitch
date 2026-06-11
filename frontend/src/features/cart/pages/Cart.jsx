@@ -30,7 +30,7 @@ export default function Cart() {
   }, [user, navigate, loadCart]);
 
   const subtotal = items.reduce(
-    (acc, item) => acc + parseFloat(item.product?.price?.amount || 0) * item.quantity,
+    (acc, item) => acc + parseFloat(item.price?.amount ?? item.product?.price?.amount ?? 0) * item.quantity,
     0
   );
 
@@ -130,8 +130,8 @@ export default function Cart() {
                       </p>
                     )}
                     <p className="text-[13px] font-bold text-bento-text font-['DM_Mono']">
-                      {item.product?.price?.currency || 'INR'}{' '}
-                      {parseFloat(item.product?.price?.amount || 0).toFixed(2)}
+                      {item.price?.currency || item.product?.price?.currency || 'INR'}{' '}
+                      {parseFloat(item.price?.amount ?? item.product?.price?.amount ?? 0).toFixed(2)}
                     </p>
                   </div>
 
@@ -159,7 +159,8 @@ export default function Cart() {
 
                     {/* Line total */}
                     <span className="text-[12px] font-bold text-bento-text font-['DM_Mono'] hidden sm:block min-w-[70px] text-right">
-                      INR {(parseFloat(item.product?.price?.amount || 0) * item.quantity).toFixed(2)}
+                      {item.price?.currency || item.product?.price?.currency || 'INR'}{' '}
+                      {(parseFloat(item.price?.amount ?? item.product?.price?.amount ?? 0) * item.quantity).toFixed(2)}
                     </span>
 
                     {/* Remove */}
