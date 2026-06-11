@@ -10,7 +10,48 @@ export async function getCart(req, res) {
             cart = await cartDao.createCart(req.user._id);
         }
 
-        res.status(200).json(cart);
+        let isModified = false;
+        let priceChanges = [];
+
+        for (let item of cart.items) {
+            if (item.product) {
+                const product = item.product;
+                const variant = product.variants?.id(item.variant);
+                
+                // Determine latest price from variant (or fallback to product price)
+                const isDefaultVariant = variant && variant.size === "OS" && variant.color === "Default";
+                const priceAmount = (variant && variant.price && variant.price.amount !== undefined && variant.price.amount !== null && !isDefaultVariant)
+                    ? variant.price.amount
+                    : (product.price?.amount || 0);
+
+                const priceCurrency = (variant && variant.price && variant.price.currency && !isDefaultVariant)
+                    ? variant.price.currency
+                    : (product.price?.currency || 'INR');
+
+                if (!item.price || item.price.amount !== priceAmount || item.price.currency !== priceCurrency) {
+                    priceChanges.push({
+                        title: product.title,
+                        oldPrice: item.price ? { amount: item.price.amount, currency: item.price.currency } : { amount: 0, currency: priceCurrency },
+                        newPrice: { amount: priceAmount, currency: priceCurrency }
+                    });
+
+                    item.price = {
+                        amount: priceAmount,
+                        currency: priceCurrency
+                    };
+                    isModified = true;
+                }
+            }
+        }
+
+        if (isModified) {
+            await cartDao.saveCart(cart);
+        }
+
+        const cartResponse = cart.toJSON ? cart.toJSON() : cart;
+        cartResponse.priceChanges = priceChanges;
+
+        res.status(200).json(cartResponse);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Failed to fetch cart" });
@@ -71,11 +112,12 @@ export async function addToCart(req, res) {
         }
 
         // Determine price from variant (or fallback to product price)
-        const priceAmount = (variant.price && variant.price.amount !== undefined && variant.price.amount !== null)
+        const isDefaultVariant = variant && variant.size === "OS" && variant.color === "Default";
+        const priceAmount = (variant.price && variant.price.amount !== undefined && variant.price.amount !== null && !isDefaultVariant)
             ? variant.price.amount
             : (product.price?.amount || 0);
 
-        const priceCurrency = (variant.price && variant.price.currency)
+        const priceCurrency = (variant.price && variant.price.currency && !isDefaultVariant)
             ? variant.price.currency
             : (product.price?.currency || 'INR');
 
@@ -111,7 +153,7 @@ export async function addToCart(req, res) {
         await cartDao.saveCart(cart);
         
         // Return populated cart
-        cart = await cart.populate('items.product', 'title price images seller');
+        cart = await cart.populate('items.product', 'title price images seller variants');
         res.status(200).json(cart);
 
     } catch (error) {
@@ -151,11 +193,12 @@ export async function updateCartItemQuantity(req, res) {
              return res.status(400).json({ message: "Insufficient stock" });
         }
 
-        const priceAmount = (variant.price && variant.price.amount !== undefined && variant.price.amount !== null)
+        const isDefaultVariant = variant && variant.size === "OS" && variant.color === "Default";
+        const priceAmount = (variant.price && variant.price.amount !== undefined && variant.price.amount !== null && !isDefaultVariant)
             ? variant.price.amount
             : (product.price?.amount || 0);
 
-        const priceCurrency = (variant.price && variant.price.currency)
+        const priceCurrency = (variant.price && variant.price.currency && !isDefaultVariant)
             ? variant.price.currency
             : (product.price?.currency || 'INR');
 
@@ -166,7 +209,7 @@ export async function updateCartItemQuantity(req, res) {
         };
         await cartDao.saveCart(cart);
 
-        await cart.populate('items.product', 'title price images seller');
+        await cart.populate('items.product', 'title price images seller variants');
         res.status(200).json(cart);
 
     } catch (error) {
@@ -188,7 +231,7 @@ export async function removeFromCart(req, res) {
         cart.items.pull(itemId);
         await cartDao.saveCart(cart);
 
-        await cart.populate('items.product', 'title price images seller');
+        await cart.populate('items.product', 'title price images seller variants');
         res.status(200).json(cart);
 
     } catch (error) {

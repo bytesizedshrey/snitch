@@ -17,7 +17,7 @@ class CartDao {
      */
     async findPopulatedCartByUser(userId) {
         return await cartModel.findOne({ user: userId })
-            .populate('items.product', 'title price images seller');
+            .populate('items.product', 'title price images seller variants');
     }
 
     /**
