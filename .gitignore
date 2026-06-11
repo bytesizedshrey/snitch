@@ -6,4 +6,6 @@ build
 .next
 *.log
 .DS_Store
-.vscode
+.vscode*.mov
+*.mov
+*.mov
