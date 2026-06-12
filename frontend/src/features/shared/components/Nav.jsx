@@ -43,22 +43,19 @@ export default function Nav({
           {/* Interactive Category Navigation (Home only) */}
           {showCategories && (
             <div className="hidden md:flex items-center gap-4 text-[12px] font-medium text-bento-text-muted">
-              {['Men', 'Women', 'Accessories', 'New Arrivals'].map((cat) => {
-                const isActive = selectedCategory === cat;
-                return (
-                  <span
-                    key={cat}
-                    onClick={() => setSelectedCategory(isActive ? null : cat)}
-                    className={`hover:text-bento-text cursor-pointer px-2 py-0.5 rounded-[4px] border transition-all ${
-                      isActive
-                        ? 'bg-bento-card-sunken border-bento-border-light text-bento-text shadow-bento-sunken'
-                        : 'border-transparent'
-                    }`}
-                  >
-                    {cat}
-                  </span>
-                );
-              })}
+              {[
+                { label: 'Store', path: '/' },
+                { label: 'Checkout', path: '/checkout' },
+                { label: 'Console', path: '/seller/dashboard' }
+              ].map((link) => (
+                <Link
+                  key={link.label}
+                  to={link.path}
+                  className="hover:text-bento-text cursor-pointer px-2 py-0.5 rounded-[4px] border border-transparent transition-all"
+                >
+                  {link.label}
+                </Link>
+              ))}
             </div>
           )}
         </div>

@@ -394,11 +394,11 @@ export default function Home() {
             </p>
           </div>
           <div className="space-y-3">
-            <h4 className="text-[12px] font-semibold text-bento-text uppercase tracking-wider">Shop</h4>
+            <h4 className="text-[12px] font-semibold text-bento-text uppercase tracking-wider">Quick Links</h4>
             <div className="flex flex-col gap-2 text-[12px] text-bento-text-muted">
-              <span className="hover:text-bento-text cursor-pointer">Men</span>
-              <span className="hover:text-bento-text cursor-pointer">Women</span>
-              <span className="hover:text-bento-text cursor-pointer">New Arrivals</span>
+              <Link to="/" className="hover:text-bento-text cursor-pointer">Store</Link>
+              <Link to="/checkout" className="hover:text-bento-text cursor-pointer">Checkout</Link>
+              <Link to="/seller/dashboard" className="hover:text-bento-text cursor-pointer">Console</Link>
             </div>
           </div>
           <div className="space-y-3">
