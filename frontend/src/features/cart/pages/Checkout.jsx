@@ -83,12 +83,12 @@ export default function Checkout() {
               setLoadingStep(4); // Success
               await loadCart();
               setTimeout(() => {
-                navigate('/');
+                navigate('/order/success', { state: { orderId: verification.order?._id } });
               }, 1500);
             } else {
-              alert('Verification failed. Invalid signature.');
               setIsProcessing(false);
               setLoadingStep(0);
+              navigate('/order/failed');
             }
           } catch (error) {
             console.error('Verification error:', error);
@@ -108,6 +108,7 @@ export default function Checkout() {
           ondismiss: function() {
             setIsProcessing(false);
             setLoadingStep(0);
+            navigate('/order/failed');
           }
         }
       };
@@ -117,9 +118,9 @@ export default function Checkout() {
       
     } catch (error) {
       console.error('Checkout error:', error);
-      alert('Checkout process failed to initialize.');
       setIsProcessing(false);
       setLoadingStep(0);
+      navigate('/order/failed');
     }
   };
 
