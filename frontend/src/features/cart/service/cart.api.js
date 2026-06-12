@@ -29,3 +29,13 @@ export async function clearCartApi() {
     const response = await cartApiInstance.delete("/clear");
     return response.data;
 }
+
+export async function createPaymentOrderApi() {
+    const response = await cartApiInstance.post('/create-order');
+    return response.data;
+}
+
+export async function verifyPaymentApi(paymentDetails) {
+    const response = await cartApiInstance.post('/payment/verify/order', paymentDetails);
+    return response.data;
+}

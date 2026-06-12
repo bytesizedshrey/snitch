@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../auth/hook/useAuth';
 import { useCart } from '../../cart/hooks/useCart';
 import { ThemeToggle } from '../../../components/ThemeToggle';
@@ -21,6 +21,7 @@ export default function Nav({
 }) {
   const { user, handleLogout } = useAuth();
   const { items } = useCart();
+  const navigate = useNavigate();
   const [searchOpen, setSearchOpen] = useState(false);
 
   const totalCartItems = items.reduce((total, item) => total + item.quantity, 0);
@@ -108,7 +109,10 @@ export default function Nav({
                 </span>
                 <button
                   onClick={async () => {
-                    await handleLogout();
+                    const res = await handleLogout();
+                    if (res.success) {
+                      navigate('/login');
+                    }
                   }}
                   className="text-[11px] text-red-500 hover:text-red-400 font-medium transition-colors cursor-pointer bg-red-500/10 px-2 py-1 rounded-[4px] border border-red-500/20"
                 >

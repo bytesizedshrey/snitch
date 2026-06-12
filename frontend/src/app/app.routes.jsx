@@ -9,6 +9,7 @@ import SellerProductDetails from '../features/products/pages/SellerProductDetail
 import Protected from '../features/auth/components/Protected';
 import ProductDetail from '../features/products/pages/ProductDetail';
 import Cart from '../features/cart/pages/Cart';
+import Checkout from '../features/cart/pages/Checkout';
 
 const router = createBrowserRouter([
   {
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
       {
         path : "/cart",
         element : <Protected><Cart /></Protected>
+      },
+      {
+        path : "/checkout",
+        element : <Protected><Checkout /></Protected>
       }
     ]
   },

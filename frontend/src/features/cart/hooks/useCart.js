@@ -8,6 +8,7 @@ import {
     clearCart,
     resetCartState
 } from '../state/cart.slice.js';
+import { createPaymentOrderApi, verifyPaymentApi } from '../service/cart.api.js';
 
 export const useCart = () => {
     const dispatch = useDispatch();
@@ -37,6 +38,14 @@ export const useCart = () => {
         dispatch(resetCartState());
     }, [dispatch]);
 
+    const createOrder = useCallback(async () => {
+        return await createPaymentOrderApi();
+    }, []);
+
+    const verifyPayment = useCallback(async (details) => {
+        return await verifyPaymentApi(details);
+    }, []);
+
     return {
         cartData,
         items: cartData?.items || [],
@@ -47,6 +56,8 @@ export const useCart = () => {
         updateQuantity,
         removeItem,
         emptyCart,
-        clearLocalCartState
+        clearLocalCartState,
+        createOrder,
+        verifyPayment
     };
 };

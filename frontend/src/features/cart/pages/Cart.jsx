@@ -326,11 +326,7 @@ export default function Cart() {
                 {/* CTA */}
                 <Button
                   disabled={items.length === 0 || loading || !isCheckoutReady}
-                  onClick={() => {
-                    alert('Thank you for your order! Checkout coming soon.');
-                    emptyCart();
-                    navigate('/');
-                  }}
+                  onClick={() => navigate('/checkout')}
                   className="w-full h-[44px] text-[12px] uppercase font-semibold tracking-wider gap-2 shadow-bento-btn mt-1 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Proceed to Checkout <ArrowRight className="h-4 w-4" />

@@ -1,9 +1,11 @@
+import { useNavigate } from 'react-router-dom';
 import { ShoppingBag, X, Minus, Plus, Trash2 } from 'lucide-react';
 import { Image as ImageIcon } from 'lucide-react';
 import { Button } from '../../../components/ui/button';
 import { useCart } from '../hooks/useCart';
 
 export function CartDrawer({ cartOpen, setCartOpen }) {
+  const navigate = useNavigate();
   const { cartData, items, updateQuantity, removeItem, emptyCart } = useCart();
 
   const totalCartItems = items.reduce((total, item) => total + item.quantity, 0);
@@ -168,9 +170,8 @@ export function CartDrawer({ cartOpen, setCartOpen }) {
           <Button
             disabled={items.length === 0 || !isCartCheckoutReady}
             onClick={() => {
-              alert('Thank you for your order! Checkout simulated successfully.');
-              emptyCart();
               setCartOpen(false);
+              navigate('/checkout');
             }}
             className="w-full h-11 text-[12px] uppercase font-semibold tracking-wider gap-2 shadow-bento-btn active:translate-y-[1px] active:shadow-bento-btn-active mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >

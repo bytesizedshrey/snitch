@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import rateLimit from 'express-rate-limit'
 import { validateRegisterUser, validateLoginUser } from '../validator/auth.validator.js'
 import { register, login, googleCallback, getMe } from '../controllers/auth.controller.js'
 import passport from 'passport'
@@ -7,8 +8,17 @@ import { authenticateUser } from '../middlewares/auth.middleware.js';
 
 const router = Router()
 
-router.post('/register', validateRegisterUser, register)
-router.post('/login', validateLoginUser, login)
+// Strict rate limit for auth routes to prevent credential stuffing
+const authLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max: 10, // Limit each IP to 10 login/register requests per `window`
+    message: 'Too many authentication attempts from this IP, please try again after an hour',
+    standardHeaders: true,
+    legacyHeaders: false,
+})
+
+router.post('/register', authLimiter, validateRegisterUser, register)
+router.post('/login', authLimiter, validateLoginUser, login)
 router.get('/me', authenticateUser, getMe)
 router.post('/logout', (req, res) => {
     res.clearCookie('token')

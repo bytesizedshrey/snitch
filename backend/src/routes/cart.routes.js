@@ -5,7 +5,9 @@ import {
     addToCart, 
     updateCartItemQuantity, 
     removeFromCart, 
-    clearCart 
+    clearCart,
+    createOrder,
+    verifyOrderController
 } from '../controllers/cart.controller.js';
 import { 
     addToCartValidator, 
@@ -32,5 +34,9 @@ router.delete('/item/:itemId', removeCartItemValidator, removeFromCart);
 
 // Clear the entire cart
 router.delete('/clear', clearCart);
+
+// Payment routes
+router.post('/create-order', createOrder);
+router.post('/payment/verify/order', authenticateUser, verifyOrderController);
 
 export default router;

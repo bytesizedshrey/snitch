@@ -303,3 +303,148 @@ export async function clearCart(req, res) {
         res.status(500).json({ message: "Failed to clear cart" });
     }
 }
+
+import paymentService from '../service/payment.service.js';
+import orderModel from '../models/order.model.js';
+import paymentModel from '../models/payment.model.js';
+
+export async function createOrder(req, res) {
+    try {
+        const cartAgg = await cartDao.aggregate([
+            { $match: { user: new mongoose.Types.ObjectId(req.user._id) } },
+            { $unwind: { path: '$items', preserveNullAndEmptyArrays: true } },
+            {
+                $lookup: {
+                    from: 'products',
+                    localField: 'items.product',
+                    foreignField: '_id',
+                    as: 'items.product'
+                }
+            },
+            { $unwind: { path: '$items.product', preserveNullAndEmptyArrays: true } },
+            {
+                $group: {
+                    _id: '$_id',
+                    user: { $first: '$user' },
+                    totalPrice: {
+                        $sum: {
+                            $cond: {
+                                if: { $gt: ['$items.product._id', null] },
+                                then: { $multiply: ['$items.quantity', '$items.price.amount'] },
+                                else: 0
+                            }
+                        }
+                    },
+                    currency: { $first: '$items.price.currency' },
+                    items: {
+                        $push: {
+                            $cond: {
+                                if: { $gt: ['$items.product._id', null] },
+                                then: '$items',
+                                else: '$$REMOVE'
+                            }
+                        }
+                    }
+                }
+            }
+        ]);
+
+        const cartData = cartAgg[0];
+        
+        if (!cartData || !cartData.items || cartData.items.length === 0) {
+            return res.status(400).json({ message: "Cart is empty" });
+        }
+
+        let multiplier = 100;
+        if (['JPY'].includes(cartData.currency)) {
+             multiplier = 1; 
+        }
+        const amountInSmallestUnit = Math.round(cartData.totalPrice * multiplier);
+
+        // Razorpay receipt length must be <= 40 characters
+        const receiptId = `rcpt_${Date.now().toString().slice(-8)}_${req.user._id.toString().slice(-6)}`;
+        
+        const razorpayOrder = await paymentService.createOrder(
+            amountInSmallestUnit, 
+            cartData.currency || 'INR', 
+            receiptId
+        );
+
+        res.status(200).json({
+            success: true,
+            orderId: razorpayOrder.id,
+            amount: razorpayOrder.amount,
+            currency: razorpayOrder.currency
+        });
+
+    } catch (error) {
+        console.error("Create order error:", error);
+        res.status(500).json({ message: "Failed to create payment order" });
+    }
+}
+
+export async function verifyOrderController(req, res) {
+    try {
+        const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+
+        if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+             return res.status(400).json({ message: "Missing payment verification parameters" });
+        }
+
+        const isValid = paymentService.verifySignature(razorpay_order_id, razorpay_payment_id, razorpay_signature);
+
+        if (!isValid) {
+            return res.status(400).json({ message: "Invalid payment signature" });
+        }
+
+        const cart = await cartDao.findCartByUser(req.user._id);
+        if (!cart || cart.items.length === 0) {
+             return res.status(400).json({ message: "Cart is empty or already processed" });
+        }
+
+        let totalAmount = 0;
+        let currency = 'INR';
+        for (const item of cart.items) {
+             if (item.price) {
+                  totalAmount += (item.price.amount * item.quantity);
+                  currency = item.price.currency;
+             }
+        }
+
+        const newOrder = await orderModel.create({
+            user: req.user._id,
+            items: cart.items,
+            totalAmount,
+            currency,
+            paymentStatus: 'completed',
+            razorpayOrderId: razorpay_order_id,
+            razorpayPaymentId: razorpay_payment_id,
+            razorpaySignature: razorpay_signature
+        });
+
+        // Record the verified payment explicitly in the payment collection
+        const newPayment = await paymentModel.create({
+            user: req.user._id,
+            order: newOrder._id,
+            razorpayOrderId: razorpay_order_id,
+            razorpayPaymentId: razorpay_payment_id,
+            razorpaySignature: razorpay_signature,
+            amount: totalAmount,
+            currency: currency,
+            status: 'success'
+        });
+
+        cart.items = [];
+        await cartDao.saveCart(cart);
+
+        res.status(200).json({
+            success: true,
+            message: "Payment verified successfully",
+            order: newOrder
+        });
+
+    } catch (error) {
+        console.error("Payment verification error:", error);
+        res.status(500).json({ message: "Payment verification failed" });
+    }
+}
