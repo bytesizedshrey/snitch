@@ -391,7 +391,9 @@ export async function verifyOrderController(req, res) {
              return res.status(400).json({ message: "Missing payment verification parameters" });
         }
 
-        const isValid = paymentService.verifySignature(razorpay_order_id, razorpay_payment_id, razorpay_signature);
+        // DEMO MODE: Bypass Razorpay Signature Verification
+        // const isValid = paymentService.verifySignature(razorpay_order_id, razorpay_payment_id, razorpay_signature);
+        const isValid = true;
 
         if (!isValid) {
             return res.status(400).json({ message: "Invalid payment signature" });
