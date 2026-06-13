@@ -255,7 +255,7 @@ export default function Register() {
 
             {/* Google OAuth */}
             <div className="animate-slide-up-fade-1">
-              <GoogleButton href="/api/auth/google" />
+              <GoogleButton href={`${import.meta.env.VITE_API_URL || ""}/api/auth/google`} />
             </div>
 
             {/* Divider */}

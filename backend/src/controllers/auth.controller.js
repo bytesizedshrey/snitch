@@ -13,8 +13,8 @@ async function sendTokenResponse(user,res,message){
     //store token in cookie
     res.cookie("token", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production" || config.NODE_ENV === "production",
+        sameSite: config.NODE_ENV === "production" ? "none" : "lax",
         maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     })
 
@@ -121,16 +121,18 @@ export const googleCallback = async (req,res) => {
         //store token in cookie so the user remains authenticated on the frontend
         res.cookie("token", token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
+            secure: process.env.NODE_ENV === "production" || config.NODE_ENV === "production",
+            sameSite: config.NODE_ENV === "production" ? "none" : "lax",
             maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
         })
 
         //This just redirects user to frontend.
-        res.redirect('http://localhost:5173/')
+        const frontendUrl = config.NODE_ENV === 'production' ? 'https://snitch-two.vercel.app' : 'http://localhost:5173';
+        res.redirect(`${frontendUrl}/`);
     } catch (error) {
         console.error("Google Auth Callback Error:", error)
-        res.redirect('http://localhost:5173/login?error=google_auth_failed')
+        const frontendUrl = config.NODE_ENV === 'production' ? 'https://snitch-two.vercel.app' : 'http://localhost:5173';
+        res.redirect(`${frontendUrl}/login?error=google_auth_failed`);
     }
 }
 
