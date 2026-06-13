@@ -61,7 +61,7 @@ export default function Checkout() {
 
       // 2. Configure Razorpay
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_T0gxp4PtMKx7ct',
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_T17UjPGrrSQihX',
         amount: orderData.amount,
         currency: orderData.currency,
         name: 'snitch.',
