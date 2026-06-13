@@ -46,33 +46,76 @@ export default function Checkout() {
     try {
       setIsProcessing(true);
       setLoadingStep(1); // Securing connection
-      
-      // Simulate network delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setLoadingStep(2); // Awaiting authorization
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      setLoadingStep(3); // Verifying
-      
-      // 3. Verify Payment on Backend (Using Demo Data)
-      const verification = await verifyPayment({
-        razorpay_order_id: 'demo_order_' + Date.now(),
-        razorpay_payment_id: 'demo_payment_' + Date.now(),
-        razorpay_signature: 'demo_signature',
-      });
 
-      if (verification.success) {
-        setLoadingStep(4); // Success
-        await loadCart();
-        setTimeout(() => {
-          navigate('/order/success', { state: { orderId: verification.order?._id } });
-        }, 1500);
-      } else {
+      // 1. Create Order on Backend
+      const orderData = await createOrder();
+      
+      if (!orderData.success) {
+        alert('Failed to initialize payment.');
         setIsProcessing(false);
         setLoadingStep(0);
-        navigate('/order/failed');
+        return;
       }
+
+      setLoadingStep(2); // Awaiting authorization
+
+      // 2. Configure Razorpay
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_T0gxp4PtMKx7ct',
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: 'snitch.',
+        description: 'Secure Checkout',
+        order_id: orderData.orderId,
+        handler: async function (response) {
+          try {
+            setLoadingStep(3); // Verifying
+            setIsProcessing(true);
+
+            // 3. Verify Payment on Backend
+            const verification = await verifyPayment({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            });
+
+            if (verification.success) {
+              setLoadingStep(4); // Success
+              await loadCart();
+              setTimeout(() => {
+                navigate('/order/success', { state: { orderId: verification.order?._id } });
+              }, 1500);
+            } else {
+              setIsProcessing(false);
+              setLoadingStep(0);
+              navigate('/order/failed');
+            }
+          } catch (error) {
+            console.error('Verification error:', error);
+            alert('Verification server error.');
+            setIsProcessing(false);
+            setLoadingStep(0);
+          }
+        },
+        prefill: {
+          name: user?.fullname || 'Customer',
+          email: user?.email || '',
+        },
+        theme: {
+          color: '#18181b', // matching bento theme slightly
+        },
+        modal: {
+          ondismiss: function() {
+            setIsProcessing(false);
+            setLoadingStep(0);
+            navigate('/order/failed');
+          }
+        }
+      };
+
+      const rzp = new Razorpay(options);
+      rzp.open();
+      
     } catch (error) {
       console.error('Checkout error:', error);
       setIsProcessing(false);
