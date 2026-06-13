@@ -53,7 +53,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/dashboard",
-    element: <Dashboard />
+    element: <Protected role="seller"><Dashboard /></Protected>
   },
   {
     path: "/seller",
@@ -64,7 +64,7 @@ const router = createBrowserRouter([
       },
       {
         path : '/seller/dashboard',
-        element : <Protected><Dashboard/></Protected>
+        element : <Protected role="seller"><Dashboard/></Protected>
       },
       {
         path : '/seller/product/:productId',
